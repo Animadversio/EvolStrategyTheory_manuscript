@@ -1,0 +1,323 @@
+%% LyX 2.4.1 created this file.  For more info, see https://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[american]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1cm,bmargin=1cm,lmargin=1cm,rmargin=1cm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{babel}
+\newtheorem{proposition}{Proposition}
+\begin{document}
+
+
+\begin{proposition}[ES as Isotropic Random Walk on Flat Landscapes]
+On a flat reward landscape, the ES weight update $\Delta\theta$ follows an isotropic Gaussian distribution:
+\[
+\Delta\theta \sim \mathcal{N}\!\left(0,\; \frac{\sigma^2}{4N}I_d\right)
+\]
+independent of the realized rewards $\{R_i\}$. Consequently, after $T$ steps the cumulative deviation satisfies:
+\[
+\mathbb{E}\|\theta_T - \theta_0\|^2 = \frac{\sigma^2 T d}{4N}
+\]
+exhibiting diffusive scaling in both time $T$ and parameter dimension $d$.
+\end{proposition}
+
+\begin{proposition}[Signal--Noise Decomposition on Linear Landscapes]
+On a linear reward landscape $R(\theta) = -\mathbf{v}^\top\theta$ with observation noise $\sigma_\xi$,
+the ES update decomposes into orthogonal signal and noise components:
+\begin{align*}
+\mathbb{E}[P^{\parallel}\Delta\theta] &= -\frac{\sigma\alpha}{\sqrt{\sigma^2\|\mathbf{v}\|^2 + \sigma_\xi^2}}\,\mathbf{v}, 
+&\mathrm{Var}[P^{\parallel}\Delta\theta] &= \frac{\alpha^2(2\sigma^2\|\mathbf{v}\|^2+\sigma_\xi^2)}{N(\sigma^2\|\mathbf{v}\|^2+\sigma_\xi^2)}P^{\parallel}\\
+\mathbb{E}[P^{\perp}\Delta\theta] &= 0, 
+&\mathrm{Var}[P^{\perp}\Delta\theta] &= \frac{\alpha^2}{N}P^{\perp}
+\end{align*}
+The signal-to-noise ratio of the on-manifold update scales as:
+\[
+\mathrm{SNR} = \sqrt{N}\cdot\frac{\sigma\|\mathbf{v}\|}{\sqrt{2\sigma^2\|\mathbf{v}\|^2 + \sigma_\xi^2}}
+\]
+In the noise-free limit $\sigma_\xi\to 0$, $\mathrm{SNR}\to\sqrt{N/2}$, revealing an irreducible floor
+set by the non-Gaussian ($\chi^2$) fluctuations of the on-manifold exploration. In the high-noise
+limit $\sigma_\xi \gg \sigma\|\mathbf{v}\|$, the SNR degrades as $\sqrt{N}\,\sigma\|\mathbf{v}\|/\sigma_\xi$,
+recovering the classical ES sample-complexity bound.
+\end{proposition}
+
+
+\section{Theory of evolutionary strategy}
+
+
+\subsection{Simplified ES}
+
+Consider the ES algorithm actually used in LLM training (cite)
+
+\subsubsection{Set up}
+
+\[
+\theta_{t+1}=\theta_{t}+\alpha\cdot\frac{1}{N}\sum_{i=1}^{N}Z_{i}\epsilon_{i}
+\]
+
+$\epsilon_{i}\sim\mathcal{N}(0,I_{d})$
+
+$Z_{i}=\frac{R_{i}-\mu_{R}}{\sigma_{R}}$ 
+
+$R_{i}=R(\theta_{t}+\sigma\epsilon_{i})$
+
+$\alpha=\frac{1}{2}\sigma$
+
+$N\approx30$
+
+The weight update is 
+\[
+\Delta\theta=\alpha\cdot\frac{1}{N}\sum_{i=1}^{N}Z_{i}\epsilon_{i}
+\]
+\subsubsection{Flat landscape}
+
+The key assumption is $Z_{i}$ is independent to $\epsilon_{i}$,
+i.e. $Z_{i}\perp\epsilon_{i}$, then we can write down the distribution
+of $\Delta\theta$ conditioned on a set of $Z_{i}$
+\[
+Var[\Delta\theta|Z_{i}]=\Big(\frac{\alpha^{2}}{N^{2}}\sum_{i}^{N}Z_{i}^{2}\Big)I_{d}
+\]
+
+The distribution is an isotropic Gaussian 
+\[
+\Delta\theta|Z_{i}\sim\mathcal{N}\big(0,\Big(\frac{\alpha^{2}}{N^{2}}\sum_{i}^{N}Z_{i}^{2}\Big)I_{d}\big)
+\]
+
+Note that $Z_{i}=\frac{R_{i}-\mu_{R}}{\sigma_{R}}$, by definition,
+\begin{align*}
+\sum_{i=1}^{N}Z_{i}^{2} & =\sum_{i=1}^{N}(\frac{R_{i}-\mu_{R}}{\sigma_{R}})^{2}\\
+ & =\frac{1}{\sigma_{R}^{2}}\sum_{i=1}^{N}(R_{i}-\mu_{R})^{2}\\
+ & =N\text{(or \ensuremath{N-1})}
+\end{align*}
+
+Thus the general scaling will be 
+\begin{align*}
+Var[\Delta\theta|Z_{i}] & =\frac{\alpha^{2}}{N^{2}}NI_{d}\\
+ & =\frac{\sigma^{2}}{4N}I_{d}
+\end{align*}
+
+Note that this is independent of the choice of $Z_{i}$, thus marginalizing
+over $Z_{i}$ we have the same distribution 
+\[
+\Delta\theta\sim\mathcal{N}\big(0,\frac{\sigma^{2}}{4N}I_{d}\big)
+\]
+\[
+Var[\Delta\theta]=\frac{\sigma^{2}}{4N}I_{d}
+\]
+
+On flat landscape, the $\Delta\theta$ will be independent across
+steps, thus after $T$ steps the combined weight change 
+\[
+\bar{\Delta\theta_{T}}=\theta_{T}-\theta_{0}=\sum_{t=1}^{T}\Delta\theta_{t}
+\]
+
+Thus the combined variance is 
+\[
+Var[\bar{\Delta\theta_{T}}]=\frac{\sigma^{2}T}{4N}I_{d}
+\]
+
+Thus, the expected squared norm of weight deviation is 
+\[
+\mathbb{E}\|\bar{\Delta\theta_{T}}\|^{2}=\frac{\sigma^{2}Td}{4N}
+\]
+
+
+\subsubsection{Linear landscape}
+
+Consider a linear landscape with i.i.d. observational noise $\xi\sim\mathcal{N}(0,1)$
+assume it's independent of the exploration vector $\xi\perp\epsilon$
+
+\[
+R(\theta)=-\mathbf{v}^{\top}\theta
+\]
+
+The observed reward at each location is, 
+\begin{align*}
+R_{i} & =R(\theta_{0}+\sigma\epsilon_{i})+\sigma_{\xi}\xi_{i}\\
+ & =-\mathbf{v}^{\top}(\theta_{0}+\sigma\epsilon_{i})+\sigma_{\xi}\xi_{i}\\
+ & \equiv-\sigma\mathbf{v}^{\top}\epsilon_{i}+\sigma_{\xi}\xi_{i}
+\end{align*}
+
+Decompose the exploration to be on-manifold and off-manifold component
+\[
+\epsilon_{i}=\epsilon_{i}^{\perp}+\epsilon_{i}^{\parallel}
+\]
+
+where $\epsilon_{i}^{\perp}:=P^{\perp}\epsilon_{i},\epsilon_{i}^{\parallel}:=P^{\parallel}\epsilon_{i}$
+\begin{align*}
+P^{\perp} & :=I-\frac{\mathbf{v}\mathbf{v}^{\top}}{\|\mathbf{v}\|^{2}}\\
+P^{\parallel} & :=\frac{\mathbf{v}\mathbf{v}^{\top}}{\|\mathbf{v}\|^{2}}
+\end{align*}
+
+Given isotropic Gaussian noise, each $\epsilon_{i}^{\perp}$ is distributed
+i.i.d. $\epsilon_{i}^{\perp}\sim\mathcal{N}(0,P^{\perp})$ and $\epsilon_{i}^{\parallel}\sim\mathcal{N}(0,P^{\parallel})$.
+$\epsilon_{i}^{\perp}$ and $\epsilon_{i}^{\parallel}$ are statistically
+independent $\epsilon_{i}^{\perp}\perp\epsilon_{i}^{\parallel}$. 
+
+Also note that 
+\begin{align*}
+R_{i} & =-\sigma\mathbf{v}^{\top}\epsilon_{i}+\sigma_{\xi}\xi_{i}\\
+ & =-\sigma\mathbf{v}^{\top}\epsilon_{i}^{\parallel}+\sigma_{\xi}\xi_{i}
+\end{align*}
+
+the reward depends on the on-manifold component, so statistically
+it's independent of the off-manifold component $R_{i}\perp\epsilon_{i}^{\perp}$. 
+
+We are going to examine the statistical property of the weight update
+step
+\[
+\Delta\theta=\alpha\cdot\frac{1}{N}\sum_{i=1}^{N}Z_{i}\epsilon_{i}
+\]
+
+Consider the weight update step on- and off-manifold
+\[
+\Delta\theta=P^{\perp}\Delta\theta+P^{\parallel}\Delta\theta
+\]
+
+
+\paragraph{Off-manifold component
+\begin{align*}
+P^{\perp}\Delta\theta & =\alpha\cdot\frac{1}{N}\sum_{i=1}^{N}Z_{i}P^{\perp}\epsilon_{i}\\
+ & =\alpha\cdot\frac{1}{N}\sum_{i=1}^{N}Z_{i}\epsilon_{i}^{\perp}
+\end{align*}
+}
+
+Conditioned on the observed normalized reward $Z_{i}$, $P^{\perp}\Delta\theta$
+is weighted sum of Gaussian random vectors, thus Gaussian 
+\[
+P^{\perp}\Delta\theta\mid\{Z_{i}\}_{i=1}^{N}\sim\mathcal{N}\Big(0,\frac{\alpha^{2}}{N^{2}}\sum_{i=1}^{N}Z_{i}^{2}P^{\perp}\Big)
+\]
+
+Since $\{Z_{i}\}_{i=1}^{N}$ are z-scored $\{R_{i}\}_{i=1}^{N}$,
+the sum satisfy the following identity. \footnote{Note that this constraint depends on the implementation of z-score
+$Z_{i}=\frac{R_{i}-\mu_{R}}{\sigma_{R}}$. In our code, we computed
+the standard deviation by $\sigma_{R}^{2}=\frac{1}{N}\sum_{i=1}^{N}(R_{i}-\mu_{R})^{2}$.
+In the unbiased variance estimator, where the denominator reads $N-1$,
+the identity reads $\sum_{i=1}^{N}Z_{i}^{2}=N-1$. }
+\[
+\sum_{i=1}^{N}Z_{i}^{2}=N
+\]
+
+Because of the following equations, 
+\begin{align*}
+\sigma_{R}^{2} & =\frac{1}{N}\sum_{i=1}^{N}(R_{i}-\mu_{R})^{2}\\
+Z_{i} & =\frac{R_{i}-\mu_{R}}{\sigma_{R}}
+\end{align*}
+
+Thus, the conditional distribution is 
+\[
+P^{\perp}\Delta\theta\mid\{Z_{i}\}_{i=1}^{N}\sim\mathcal{N}\Big(0,\frac{\alpha^{2}}{N^{2}}NP^{\perp}\Big)
+\]
+
+Since the conditional distribution $P^{\perp}\Delta\theta\mid\{Z_{i}\}_{i=1}^{N}$
+is independent of the observed reward; marginalize over it, we have
+\[
+P^{\perp}\Delta\theta\sim\mathcal{N}\Big(0,\frac{\alpha^{2}}{N}P^{\perp}\Big)
+\]
+
+The norm of off manifold component is 
+
+\begin{align*}
+\mathbb{E}\|P^{\perp}\Delta\theta\|^{2} & =\text{Tr}[\text{Var}[P^{\perp}\Delta\theta]]\\
+ & =\text{Tr}\Big[\frac{\alpha^{2}}{N}P^{\perp}\Big]\\
+ & =\frac{\alpha^{2}(d-1)}{N}
+\end{align*}
+
+
+\paragraph{On-manifold component}
+
+\begin{align*}
+P^{\parallel}\Delta\theta & =\alpha\cdot\frac{1}{N}\sum_{i=1}^{N}Z_{i}P^{\parallel}\epsilon_{i}\\
+ & =\alpha\cdot\frac{1}{N}\sum_{i=1}^{N}Z_{i}\epsilon_{i}^{\parallel}
+\end{align*}
+
+The on-manifold variable can be expressed as $\epsilon_{i}^{\parallel}=\frac{\mathbf{v}}{\|\mathbf{v}\|}n_{i}$,
+$n_{i}\sim\mathcal{N}(0,1)$, thus reward can be written as 
+\begin{align*}
+R_{i} & =-\sigma\mathbf{v}^{\top}\epsilon_{i}^{\parallel}+\sigma_{\xi}\xi_{i}\\
+ & =-\sigma\frac{\mathbf{v}^{\top}\mathbf{v}}{\|\mathbf{v}\|}n_{i}+\sigma_{\xi}\xi_{i}\\
+ & =-\sigma\|\mathbf{v}\|n_{i}+\sigma_{\xi}\xi_{i}
+\end{align*}
+
+Recall the definition of observed reward and z-score. 
+\[
+Z_{i}=\frac{R_{i}-\mu_{R}}{\sigma_{R}}
+\]
+
+To simplify derivation, we use the population expectation and standard
+deviation here, 
+\begin{align*}
+\mu_{R} & \approx\mathbb{E}[R_{i}]=0\\
+\sigma_{R}^{2} & \approx\text{Var}[R_{i}]=\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}
+\end{align*}
+
+Under such population mean and variance simplification, 
+\begin{align*}
+P^{\parallel}\Delta\theta & =\frac{\alpha}{N}\sum_{i=1}^{N}Z_{i}\epsilon_{i}^{\parallel}\\
+ & =\frac{\alpha}{N}\sum_{i=1}^{N}\frac{-\sigma\|\mathbf{v}\|n_{i}+\sigma_{\xi}\xi_{i}-\mu_{R}}{\sigma_{R}}n_{i}\frac{\mathbf{v}}{\|\mathbf{v}\|}\\
+ & =\frac{\alpha}{N\sigma_{R}}\sum_{i=1}^{N}(-\sigma\|\mathbf{v}\|n_{i}+\sigma_{\xi}\xi_{i})n_{i}\frac{\mathbf{v}}{\|\mathbf{v}\|}
+\end{align*}
+
+The expectation reads 
+
+\begin{align*}
+\mathbb{E}[P^{\parallel}\Delta\theta] & =\frac{\alpha}{N\sigma_{R}}\sum_{i=1}^{N}\mathbb{E}\big[(-\sigma\|\mathbf{v}\|n_{i}+\sigma_{\xi}\xi_{i})n_{i}\big]\frac{\mathbf{v}}{\|\mathbf{v}\|}\\
+ & =\frac{\alpha}{N\sigma_{R}}\mathbb{E}\big[-\sigma\|\mathbf{v}\|\sum_{i=1}^{N}n_{i}^{2}+\sigma_{\xi}\sum_{i=1}^{N}\xi_{i}n_{i}\big]\frac{\mathbf{v}}{\|\mathbf{v}\|}\\
+ & =\frac{\alpha}{N\sigma_{R}}(-\sigma\|\mathbf{v}\|N)\frac{\mathbf{v}}{\|\mathbf{v}\|}\\
+ & =\frac{-\sigma\alpha}{\sigma_{R}}\mathbf{v}\\
+ & =\frac{-\sigma\alpha\mathbf{v}}{\sqrt{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}
+\end{align*}
+
+using independence $\mathbb{E}[\xi_{i}n_{i}]=0$ and chi-square $\mathbb{E}[\sum_{i=1}^{N}n_{i}^{2}]=N$. 
+
+Next consider the variance, consider the individual term, $X_{i}=-\sigma\|\mathbf{v}\|n_{i}^{2}+\sigma_{\xi}\xi_{i}n_{i}$
+and its variance 
+\begin{align*}
+\text{Var}[X_{i}] & =\mathbb{E}[(-\sigma\|\mathbf{v}\|n_{i}^{2}+\sigma_{\xi}\xi_{i}n_{i})(-\sigma\|\mathbf{v}\|n_{i}^{2}+\sigma_{\xi}\xi_{i}n_{i})]-\mathbb{E}[-\sigma\|\mathbf{v}\|n_{i}^{2}+\sigma_{\xi}\xi_{i}n_{i}]^{2}\\
+ & =\mathbb{E}[\sigma^{2}\|\mathbf{v}\|^{2}\underbrace{n_{i}^{4}}_{3}-\sigma\|\mathbf{v}\|\underbrace{\xi_{i}}_{0}\underbrace{n_{i}^{3}}_{0}+\sigma_{\xi}^{2}\underbrace{\xi_{i}^{2}}_{1}\underbrace{n_{i}^{2}}_{1}]-(\sigma\|\mathbf{v}\|)^{2}\\
+ & =3\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}-(\sigma\|\mathbf{v}\|)^{2}\\
+ & =2\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}
+\end{align*}
+
+Thus 
+\begin{align*}
+\text{Var}[P^{\parallel}\Delta\theta] & =\frac{\alpha^{2}}{N^{2}\sigma_{R}^{2}}N\text{Var}[X_{i}]\frac{\mathbf{v}\mathbf{v}^{\top}}{\|\mathbf{v}\|^{2}}\\
+ & =\frac{\alpha^{2}(2\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})}{N\sigma_{R}^{2}}P^{\parallel}\\
+ & =\frac{\alpha^{2}(2\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})}{N(\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})}P^{\parallel}
+\end{align*}
+
+\begin{align*}
+\mathbb{E}[\|P^{\parallel}\Delta\theta\|^{2}] & =\text{Tr}\big[\text{Var}[P^{\parallel}\Delta\theta]\big]+\mathbb{E}[P^{\parallel}\Delta\theta]^{\top}\mathbb{E}[P^{\parallel}\Delta\theta]\\
+ & =\frac{\alpha^{2}(2\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})}{N(\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})}+\frac{-\sigma\alpha\mathbf{v}^{\top}}{\sqrt{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}\frac{-\sigma\alpha\mathbf{v}}{\sqrt{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}\\
+ & =\frac{\alpha^{2}(2\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})}{N(\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})}+\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}\\
+ & =\frac{\alpha^{2}}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}
+\end{align*}
+
+\paragraph{Manifold alignment of update}
+
+Consider the ratio of on and off manifold movement 
+
+\[
+\mathbb{E}[\|P^{\parallel}\Delta\theta\|^{2}]=\frac{\alpha^{2}}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}
+\]
+\[
+\mathbb{E}\|P^{\perp}\Delta\theta\|^{2}=\frac{\alpha^{2}(d-1)}{N}
+\]
+
+The fraction of on manifold squared deviation in the total deviation
+
+\begin{align*}
+\frac{\mathbb{E}[\|P^{\parallel}\Delta\theta\|^{2}]}{\mathbb{E}[\|\Delta\theta\|^{2}]} & =\frac{\mathbb{E}[\|P^{\parallel}\Delta\theta\|^{2}]}{\mathbb{E}[\|P^{\parallel}\Delta\theta\|^{2}]+\mathbb{E}\|P^{\perp}\Delta\theta\|^{2}}\\
+ & =\frac{\frac{\alpha^{2}}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}{\frac{\alpha^{2}(d-1)}{N}+\frac{\alpha^{2}}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}\\
+ & =\frac{\frac{\alpha^{2}}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}{\frac{\alpha^{2}d}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}\\
+ & =\frac{\frac{1}{N}+\frac{N+1}{N}\frac{\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}{\frac{d}{N}+\frac{N+1}{N}\frac{\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}\\
+ & =\frac{1+(N+1)\frac{\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}{d+(N+1)\frac{\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}\\
+%  & =\frac{(\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})+(N+1)\sigma^{2}\|\mathbf{v}\|^{2}}{d(\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})+(N+1)\sigma^{2}\|\mathbf{v}\|^{2}}
+\end{align*}
+
+
+
+
+\end{document}
