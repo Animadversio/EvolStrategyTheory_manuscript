@@ -8,6 +8,11 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{babel}
+
+% Required for tikzpicture and drawing features
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
 \newtheorem{proposition}{Proposition}
 \begin{document}
 
@@ -86,7 +91,10 @@ The distribution is an isotropic Gaussian:
 \Delta\theta|Z_{i} \sim \mathcal{N}\left(0, \left(\frac{\alpha^{2}}{N^{2}}\sum_{i=1}^{N}Z_{i}^{2}\right)I_{d}\right)
 \end{equation}
 
-Note that $Z_{i} = \frac{R_{i} - \mu_{R}}{\sigma_{R}}$. By definition,
+Note that $Z_{i} = \frac{R_{i} - \mu_{R}}{\sigma_{R}}$. By definition,\footnote{Note that this constraint depends on the implementation of the z-score
+$Z_{i} = \frac{R_{i}-\mu_{R}}{\sigma_{R}}$. In our code, we compute
+the standard deviation as $\sigma_{R}^{2} = \frac{1}{N}\sum_{i=1}^{N}(R_{i}-\mu_{R})^{2}$.
+In the unbiased variance estimator (denominator $N-1$), the identity reads $\sum_{i=1}^{N}Z_{i}^{2} = N-1$.}
 \begin{align}
 \sum_{i=1}^{N}Z_{i}^{2}
 &= \sum_{i=1}^{N} \left(\frac{R_{i}-\mu_{R}}{\sigma_{R}}\right)^{2} \notag\\
@@ -97,16 +105,16 @@ Note that $Z_{i} = \frac{R_{i} - \mu_{R}}{\sigma_{R}}$. By definition,
 Thus the general scaling will be:
 \begin{align}
 \mathrm{Var}[\Delta\theta|Z_{i}] &= \frac{\alpha^{2}}{N^{2}}N I_{d} \notag\\
-&= \frac{\sigma^{2}}{4N}I_{d}
+&= \frac{\alpha^{2}}{N}I_{d}
 \end{align}
 
 Note that this is independent of the choice of $Z_{i}$; thus, marginalizing
 over $Z_{i}$ gives the same distribution:
 \begin{equation}
-\Delta\theta\sim\mathcal{N}\left(0, \frac{\sigma^{2}}{4N}I_{d}\right)
+\Delta\theta\sim\mathcal{N}\left(0, \frac{\alpha^{2}}{N}I_{d}\right)
 \end{equation}
 \begin{equation}
-\mathrm{Var}[\Delta\theta] = \frac{\sigma^{2}}{4N}I_{d}
+\mathrm{Var}[\Delta\theta] = \frac{\alpha^{2}}{N}I_{d}
 \end{equation}
 
 On a flat landscape, the $\Delta\theta$ are independent across
@@ -117,10 +125,19 @@ steps, so after $T$ steps the combined weight change is:
 
 Thus the combined variance is
 \begin{equation}
-\mathrm{Var}[\bar{\Delta\theta_{T}}] = \frac{\sigma^{2}T}{4N}I_{d}
+\mathrm{Var}[\bar{\Delta\theta_{T}}] = \frac{\alpha^{2}T}{N}I_{d}
 \end{equation}
 
 Therefore, the expected squared norm of weight deviation is
+\begin{equation}
+\mathbb{E}\|\bar{\Delta\theta_{T}}\|^{2} = \frac{\alpha^{2}Td}{N}
+\end{equation}
+
+Finally, substituting $\alpha = \frac{\sigma}{2}$ recovers
+\begin{equation}
+\frac{\alpha^{2}}{N} = \frac{\sigma^{2}}{4N}
+\end{equation}
+and 
 \begin{equation}
 \mathbb{E}\|\bar{\Delta\theta_{T}}\|^{2} = \frac{\sigma^{2}Td}{4N}
 \end{equation}
@@ -191,10 +208,6 @@ P^{\perp}\Delta\theta\,\big|\;\{Z_{i}\}_{i=1}^{N} \sim \mathcal{N}\left(0,\frac{
 \end{equation}
 
 Since $\{Z_{i}\}_{i=1}^{N}$ are z-scored $\{R_{i}\}_{i=1}^{N}$, the sum satisfies the following identity.%
-\footnote{Note that this constraint depends on the implementation of the z-score
-$Z_{i} = \frac{R_{i}-\mu_{R}}{\sigma_{R}}$. In our code, we compute
-the standard deviation as $\sigma_{R}^{2} = \frac{1}{N}\sum_{i=1}^{N}(R_{i}-\mu_{R})^{2}$.
-In the unbiased variance estimator (denominator $N-1$), the identity reads $\sum_{i=1}^{N}Z_{i}^{2} = N-1$.}
 \begin{equation}
 \sum_{i=1}^{N}Z_{i}^{2} = N
 \end{equation}
@@ -260,7 +273,6 @@ P^{\parallel}\Delta\theta &= \frac{\alpha}{N} \sum_{i=1}^{N} Z_{i} \epsilon_{i}^
 \end{align}
 
 The expectation reads
-
 \begin{align}
 \mathbb{E}[P^{\parallel}\Delta\theta] =&~ \frac{\alpha}{N\sigma_{R}}\sum_{i=1}^{N} \mathbb{E}\left[ (-\sigma\|\mathbf{v}\| n_{i} + \sigma_{\xi}\xi_{i}) n_{i} \right] \frac{\mathbf{v}}{\|\mathbf{v}\|} \notag\\
 =&~\frac{\alpha}{N\sigma_{R}}\mathbb{E}[ -\sigma\|\mathbf{v}\| \sum_{i=1}^{N} n_{i}^{2} + \sigma_{\xi} \sum_{i=1}^{N}\xi_{i} n_{i} ]\frac{\mathbf{v}}{\|\mathbf{v}\|} \notag\\
@@ -320,5 +332,62 @@ The fraction of on-manifold squared deviation in the total deviation is:
          { d + (N+1)\frac{ \sigma^{2}\|\mathbf{v}\|^{2} }{ \sigma^{2}\|\mathbf{v}\|^{2} + \sigma_{\xi}^{2} } }
 \end{align}
 
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=1.0, every node/.style={font=\small}]
+      % ---------- Type I ----------
+      \node at (0,2.8) {\textbf{Type I: $1$ diagram}};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a1) at (-0.8,2) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b1) at (-0.2,2) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c1) at (0.8,2) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d1) at (1.4,2) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e1) at (2.4,2) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f1) at (3.0,2) {};
+      \draw (a1) -- (b1);
+      \draw (c1) -- (d1);
+      \draw (e1) -- (f1);
+      \node at (1.1,1.35) {$\delta_{ab}\delta_{cd}\delta_{ef}\;\Rightarrow\;(\mathrm{Tr}Q)^2\delta_{ef}$};
+    
+      % ---------- Type II ----------
+      \node at (0,-0.2) {\textbf{Type II: $2$ diagrams}};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a2) at (-0.8,-1) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b2) at (-0.2,-1) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c2) at (0.8,-1) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d2) at (1.4,-1) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e2) at (2.4,-1) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f2) at (3.0,-1) {};
+      \draw (a2) to[out=20,in=160] (c2);
+      \draw (b2) to[out=20,in=160] (d2);
+      \draw (e2) -- (f2);
+      \node at (1.1,-1.65) {$(ac)(bd)(ef)$ and $(ad)(bc)(ef)\;\Rightarrow\;2\,\mathrm{Tr}(Q^2)\delta_{ef}$};
+    
+      % ---------- Type III ----------
+      \node at (7,2.8) {\textbf{Type III: $4$ diagrams}};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a3) at (6.0,2) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b3) at (6.6,2) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c3) at (7.6,2) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d3) at (8.2,2) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e3) at (9.2,2) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f3) at (9.8,2) {};
+      \draw (a3) -- (b3);
+      \draw (c3) to[out=20,in=160] (e3);
+      \draw (d3) to[out=20,in=160] (f3);
+      \node at (7.9,1.35) {e.g. $(ab)(ce)(df)\;\Rightarrow\;4\,\mathrm{Tr}(Q)\,Q_{ef}$};
+    
+      % ---------- Type IV ----------
+      \node at (7,-0.2) {\textbf{Type IV: $8$ diagrams}};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a4) at (6.0,-1) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b4) at (6.6,-1) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c4) at (7.6,-1) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d4) at (8.2,-1) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e4) at (9.2,-1) {};
+      \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f4) at (9.8,-1) {};
+      \draw (a4) to[out=20,in=160] (e4);
+      \draw (b4) to[out=20,in=160] (c4);
+      \draw (d4) to[out=20,in=160] (f4);
+      \node at (7.9,-1.65) {e.g. $(ae)(bc)(df)\;\Rightarrow\;8\,(Q^2)_{ef}$};
+    \end{tikzpicture}
+    \caption{Wick contraction classes for $\mathbb{E}[(\epsilon^\top Q\epsilon)^2\epsilon_e\epsilon_f]$.}
+\end{figure}
 
 \end{document}
