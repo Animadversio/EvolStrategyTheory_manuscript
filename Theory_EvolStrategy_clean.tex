@@ -11,7 +11,7 @@
 
 % Required for tikzpicture and drawing features
 \usepackage{tikz}
-\usetikzlibrary{shapes,arrows}
+\usetikzlibrary{shapes,arrows,calc}
 
 \newtheorem{proposition}{Proposition}
 \begin{document}
@@ -332,62 +332,245 @@ The fraction of on-manifold squared deviation in the total deviation is:
          { d + (N+1)\frac{ \sigma^{2}\|\mathbf{v}\|^{2} }{ \sigma^{2}\|\mathbf{v}\|^{2} + \sigma_{\xi}^{2} } }
 \end{align}
 
-\begin{figure}[h]
-    \centering
-    \begin{tikzpicture}[scale=1.0, every node/.style={font=\small}]
-      % ---------- Type I ----------
-      \node at (0,2.8) {\textbf{Type I: $1$ diagram}};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a1) at (-0.8,2) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b1) at (-0.2,2) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c1) at (0.8,2) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d1) at (1.4,2) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e1) at (2.4,2) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f1) at (3.0,2) {};
-      \draw (a1) -- (b1);
-      \draw (c1) -- (d1);
-      \draw (e1) -- (f1);
-      \node at (1.1,1.35) {$\delta_{ab}\delta_{cd}\delta_{ef}\;\Rightarrow\;(\mathrm{Tr}Q)^2\delta_{ef}$};
+% \begin{figure}[h]
+%     \centering
+%     \begin{tikzpicture}[scale=1.0, every node/.style={font=\small}]
+%       % ---------- Type I ----------
+%       \node at (0,2.8) {\textbf{Type I: $1$ diagram}};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a1) at (-0.8,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b1) at (-0.2,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c1) at (0.8,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d1) at (1.4,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e1) at (2.4,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f1) at (3.0,2) {};
+%       \draw (a1) -- (b1);
+%       \draw (c1) -- (d1);
+%       \draw (e1) -- (f1);
+%       \node at (1.1,1.35) {$\delta_{ab}\delta_{cd}\delta_{ef}\;\Rightarrow\;(\mathrm{Tr}Q)^2\delta_{ef}$};
     
-      % ---------- Type II ----------
-      \node at (0,-0.2) {\textbf{Type II: $2$ diagrams}};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a2) at (-0.8,-1) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b2) at (-0.2,-1) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c2) at (0.8,-1) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d2) at (1.4,-1) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e2) at (2.4,-1) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f2) at (3.0,-1) {};
-      \draw (a2) to[out=20,in=160] (c2);
-      \draw (b2) to[out=20,in=160] (d2);
-      \draw (e2) -- (f2);
-      \node at (1.1,-1.65) {$(ac)(bd)(ef)$ and $(ad)(bc)(ef)\;\Rightarrow\;2\,\mathrm{Tr}(Q^2)\delta_{ef}$};
+%       % ---------- Type II ----------
+%       \node at (0,-0.2) {\textbf{Type II: $2$ diagrams}};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a2) at (-0.8,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b2) at (-0.2,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c2) at (0.8,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d2) at (1.4,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e2) at (2.4,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f2) at (3.0,-1) {};
+%       \draw (a2) to[out=20,in=160] (c2);
+%       \draw (b2) to[out=20,in=160] (d2);
+%       \draw (e2) -- (f2);
+%       \node at (1.1,-1.65) {$(ac)(bd)(ef)$ and $(ad)(bc)(ef)\;\Rightarrow\;2\,\mathrm{Tr}(Q^2)\delta_{ef}$};
     
-      % ---------- Type III ----------
-      \node at (7,2.8) {\textbf{Type III: $4$ diagrams}};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a3) at (6.0,2) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b3) at (6.6,2) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c3) at (7.6,2) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d3) at (8.2,2) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e3) at (9.2,2) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f3) at (9.8,2) {};
-      \draw (a3) -- (b3);
-      \draw (c3) to[out=20,in=160] (e3);
-      \draw (d3) to[out=20,in=160] (f3);
-      \node at (7.9,1.35) {e.g. $(ab)(ce)(df)\;\Rightarrow\;4\,\mathrm{Tr}(Q)\,Q_{ef}$};
+%       % ---------- Type III ----------
+%       \node at (7,2.8) {\textbf{Type III: $4$ diagrams}};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a3) at (6.0,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b3) at (6.6,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c3) at (7.6,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d3) at (8.2,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e3) at (9.2,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f3) at (9.8,2) {};
+%       \draw (a3) -- (b3);
+%       \draw (c3) to[out=20,in=160] (e3);
+%       \draw (d3) to[out=20,in=160] (f3);
+%       \node at (7.9,1.35) {e.g. $(ab)(ce)(df)\;\Rightarrow\;4\,\mathrm{Tr}(Q)\,Q_{ef}$};
     
-      % ---------- Type IV ----------
-      \node at (7,-0.2) {\textbf{Type IV: $8$ diagrams}};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a4) at (6.0,-1) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b4) at (6.6,-1) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c4) at (7.6,-1) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d4) at (8.2,-1) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e4) at (9.2,-1) {};
-      \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f4) at (9.8,-1) {};
-      \draw (a4) to[out=20,in=160] (e4);
-      \draw (b4) to[out=20,in=160] (c4);
-      \draw (d4) to[out=20,in=160] (f4);
-      \node at (7.9,-1.65) {e.g. $(ae)(bc)(df)\;\Rightarrow\;8\,(Q^2)_{ef}$};
-    \end{tikzpicture}
-    \caption{Wick contraction classes for $\mathbb{E}[(\epsilon^\top Q\epsilon)^2\epsilon_e\epsilon_f]$.}
-\end{figure}
+%       % ---------- Type IV ----------
+%       \node at (7,-0.2) {\textbf{Type IV: $8$ diagrams}};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a4) at (6.0,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b4) at (6.6,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c4) at (7.6,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d4) at (8.2,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$e$] (e4) at (9.2,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$f$] (f4) at (9.8,-1) {};
+%       \draw (a4) to[out=20,in=160] (e4);
+%       \draw (b4) to[out=20,in=160] (c4);
+%       \draw (d4) to[out=20,in=160] (f4);
+%       \node at (7.9,-1.65) {e.g. $(ae)(bc)(df)\;\Rightarrow\;8\,(Q^2)_{ef}$};
+%     \end{tikzpicture}
+%     \caption{Wick contraction classes for $\mathbb{E}[(\epsilon^\top Q\epsilon)^2\epsilon_e\epsilon_f]$.}
+% \end{figure}
+
+% \begin{figure}[h]
+%     \centering
+%     \begin{tikzpicture}[scale=1.0, every node/.style={font=\small}]
+    
+%       % helper macro for Π-shaped Q edge
+%       \newcommand{\Qedge}[3]{
+%         \draw (#1) |- ($(#1)!0.5!(#2)+(0,0.4)$) -| (#2)
+%           node[midway,above] {$#3$};
+%       }
+    
+%       % ---------- Type I ----------
+%       \node at (0,2.8) {\textbf{Type I: $1$ diagram}};
+    
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a1) at (-0.8,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b1) at (-0.2,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c1) at (0.8,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d1) at (1.4,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=right:$x$] (x1) at (2.8,2) {};
+    
+%       % Π-shaped Q vertices
+%       \Qedge{a1}{b1}{Q_{ab}}
+%       \Qedge{c1}{d1}{Q_{cd}}
+    
+%       % external loop
+%       \draw (x1) to[out=180,in=0] (x1);
+    
+%       \node at (1.1,1.35) {$\Rightarrow (\mathrm{Tr}Q)^2\,\delta_{xx}$};
+    
+%       % ---------- Type II ----------
+%       \node at (0,-0.2) {\textbf{Type II: $2$ diagrams}};
+    
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a2) at (-0.8,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b2) at (-0.2,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c2) at (0.8,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d2) at (1.4,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=right:$x$] (x2) at (2.8,-1) {};
+    
+%       \Qedge{a2}{b2}{Q_{ab}}
+%       \Qedge{c2}{d2}{Q_{cd}}
+    
+%       % cross contractions
+%       \draw (a2) to[out=20,in=160] (c2);
+%       \draw (b2) to[out=20,in=160] (d2);
+    
+%       \draw (x2) to[out=180,in=0] (x2);
+    
+%       \node at (1.1,-1.65) {$\Rightarrow 2\,\mathrm{Tr}(Q^2)\,\delta_{xx}$};
+    
+%       % ---------- Type III ----------
+%       \node at (7,2.8) {\textbf{Type III: $4$ diagrams}};
+    
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a3) at (6.0,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b3) at (6.6,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c3) at (7.6,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d3) at (8.2,2) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=right:$x$] (x3) at (9.6,2) {};
+    
+%       \Qedge{a3}{b3}{Q_{ab}}
+%       \Qedge{c3}{d3}{Q_{cd}}
+    
+%       \draw (c3) -- (x3);
+%       \draw (d3) -- (x3);
+    
+%       \node at (7.9,1.35) {$\Rightarrow 4\,\mathrm{Tr}(Q)\,Q_{xx}$};
+    
+%       % ---------- Type IV ----------
+%       \node at (7,-0.2) {\textbf{Type IV: $8$ diagrams}};
+    
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a4) at (6.0,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b4) at (6.6,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c4) at (7.6,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d4) at (8.2,-1) {};
+%       \node[circle,fill=black,inner sep=1.5pt,label=right:$x$] (x4) at (9.6,-1) {};
+    
+%       \Qedge{a4}{b4}{Q_{ab}}
+%       \Qedge{c4}{d4}{Q_{cd}}
+    
+%       \draw (a4) -- (x4);
+%       \draw (b4) -- (c4);
+%       \draw (d4) -- (x4);
+    
+%       \node at (7.9,-1.65) {$\Rightarrow 8\,(Q^2)_{xx}$};
+    
+%     \end{tikzpicture}
+%     \caption{Wick contractions with $\Pi$-shaped quadratic vertices representing $Q_{ab}, Q_{cd}$.}
+%     \end{figure}
+
+    \begin{figure}[h]
+        \centering
+        \begin{tikzpicture}[scale=1.0, every node/.style={font=\small}]
+          % helper macro for Π-shaped Q edge
+          \newcommand{\Qedge}[3]{
+            \draw[dashed] (#1) |- ($(#1)!0.5!(#2)+(0,0.4)$) -| (#2)
+              node[midway,above] {$#3$};
+          }
+        
+          % helper macro for external cross node
+          \newcommand{\crossnode}[3]{
+            \node[draw, cross out, inner sep=2pt, line width=0.8pt, label=below:$#2$] (#1) at #3 {};
+          }
+        
+          % -- Move titles up above diagrams to avoid overlap --
+          % ---------- Type I ----------
+          \node at (0,3.2) {\textbf{Type I: $1$ diagram}};
+        
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a1) at (-1.2,2) {};
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b1) at (-0.6,2) {};
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c1) at (0.4,2) {};
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d1) at (1.0,2) {};
+          \crossnode{e1}{e}{(2.0,2)}
+          \crossnode{f1}{f}{(2.8,2)}
+        
+          \Qedge{a1}{b1}{Q_{ab}}
+          \Qedge{c1}{d1}{Q_{cd}}
+        
+          \draw (e1) -- (f1);
+          \draw (a1) to[out=0,in=180] (b1);
+          \draw (c1) to[out=0,in=180] (d1);
+        
+          \node at (0.8,1.35) {$\Rightarrow (\mathrm{Tr}Q)^2\,\delta_{ef}$};
+        
+          % ---------- Type II ----------
+          \node at (0,0.2) {\textbf{Type II: $2$ diagrams}};
+        
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a2) at (-1.2,-1) {};
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b2) at (-0.6,-1) {};
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c2) at (0.4,-1) {};
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d2) at (1.0,-1) {};
+          \crossnode{e2}{e}{(2.0,-1)}
+          \crossnode{f2}{f}{(2.8,-1)}
+        
+          \Qedge{a2}{b2}{Q_{ab}}
+          \Qedge{c2}{d2}{Q_{cd}}
+        
+          \draw (a2) to[out=20,in=160] (c2);
+          \draw (b2) to[out=20,in=160] (d2);
+          \draw (e2) -- (f2);
+        
+          \node at (0.8,-1.65) {$\Rightarrow 2\,\mathrm{Tr}(Q^2)\,\delta_{ef}$};
+        
+          % ---------- Type III ----------
+          \node at (7,3.2) {\textbf{Type III: $4$ diagrams}};
+        
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a3) at (5.5,2) {};
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b3) at (6.1,2) {};
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c3) at (7.1,2) {};
+          \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d3) at (7.7,2) {};
+          \crossnode{e3}{e}{(8.7,2)}
+          \crossnode{f3}{f}{(9.5,2)}
+        
+          \Qedge{a3}{b3}{Q_{ab}}
+          \Qedge{c3}{d3}{Q_{cd}}
+        
+          \draw (c3) to[out=15,in=165] (e3);
+          \draw (d3) to[out=15,in=165] (f3);
+          \draw (a3) to[out=0,in=180] (b3);
+        
+          \node at (7.5,1.35) {$\Rightarrow 4\,\mathrm{Tr}(Q)\,Q_{ef}$};
+        
+          % ---------- Type IV ----------
+          \node at (7,0.2) {\textbf{Type IV: $8$ diagrams}};
+        
+            \node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a4) at (5.5,-1) {};
+            \node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b4) at (6.1,-1) {};
+            \node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c4) at (7.1,-1) {};
+            \node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d4) at (7.7,-1) {};
+            \crossnode{e4}{e}{(9.0,-1)}
+            \crossnode{f4}{f}{(10.0,-1)}
+
+            \Qedge{a4}{b4}{Q_{ab}}
+            \Qedge{c4}{d4}{Q_{cd}}
+
+            \draw (a4) to[out=15,in=165] (e4);
+            \draw (b4) to[out=0,in=180] (c4);
+            \draw (d4) to[out=15,in=165] (f4);
+        
+          \node at (7.5,-1.65) {$\Rightarrow 8\,(Q^2)_{ef}$};
+        
+        \end{tikzpicture}
+        \caption{Wick contraction classes for $\mathbb{E}[(\epsilon^\top Q\epsilon)^2\,\epsilon_e\epsilon_f]$, with external loose ends $e,f$ shown as crosses.}
+    \end{figure}
+
 
 \end{document}
