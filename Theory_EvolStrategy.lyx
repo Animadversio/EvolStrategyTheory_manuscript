@@ -5,6 +5,12 @@
 \save_transient_properties true
 \origin unavailable
 \textclass article
+\begin_preamble
+
+% Required for tikzpicture and drawing features
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,calc}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children no
 \language american
@@ -1371,16 +1377,254 @@ Thus
 
 \end_layout
 
-\begin_layout Standard
-Consider the on manifold movement 
+\begin_layout Paragraph
+Manifold alignment of update
 \end_layout
 
+\begin_layout Standard
+Consider the ratio of on and off manifold movement 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbb{E}[\|P^{\parallel}\Delta\theta\|^{2}]=\frac{\alpha^{2}}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\mathbb{E}\|P^{\perp}\Delta\theta\|^{2}=\frac{\alpha^{2}(d-1)}{N}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The fraction of squared norm for on manifold deviation out of the total deviation
+\begin_inset Formula 
+\begin{align*}
+\rho=\frac{\mathbb{E}[\|P^{\parallel}\Delta\theta\|^{2}]}{\mathbb{E}[\|\Delta\theta\|^{2}]} & =\frac{\mathbb{E}[\|P^{\parallel}\Delta\theta\|^{2}]}{\mathbb{E}[\|P^{\parallel}\Delta\theta\|^{2}]+\mathbb{E}\|P^{\perp}\Delta\theta\|^{2}}\\
+ & =\frac{\frac{\alpha^{2}}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}{\frac{\alpha^{2}(d-1)}{N}+\frac{\alpha^{2}}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}\\
+ & =\frac{\frac{\alpha^{2}}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}{\frac{\alpha^{2}d}{N}+(1+\frac{1}{N})\frac{\sigma^{2}\|\mathbf{v}\|^{2}\alpha^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}\\
+ & =\frac{\frac{1}{N}+\frac{N+1}{N}\frac{\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}{\frac{d}{N}+\frac{N+1}{N}\frac{\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}\\
+ & =\frac{1+(N+1)\frac{\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}{d+(N+1)\frac{\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}}\\
+ & =\frac{1+(N+1)s}{d+(N+1)s}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $s:=\frac{\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+=\frac{(\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})+(N+1)\sigma^{2}\|\mathbf{v}\|^{2}}{d(\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})+(N+1)\sigma^{2}\|\mathbf{v}\|^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This formulation reveals the key scaling relation of on and off manifold movement 
+\end_layout
+
+\begin_layout Itemize
+Signal to noise ratio 
+\begin_inset Formula $s:=\frac{\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}}$
+\end_inset
+
+ ,
+ which range from 
+\begin_inset Formula $s\in[0,1]$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+When no gradient exists,
+ 
+\begin_inset Formula $\|\mathbf{v}\|^{2}=0$
+\end_inset
+
+,
+ then independent of number of sample 
+\begin_inset Formula $N$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\rho=1/d$
+\end_inset
+
+.
+ i.e.
+ the norm on one axis among 
+\begin_inset Formula $d$
+\end_inset
+
+ axis is 
+\begin_inset Formula $1/d$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Similarly,
+ when 
+\begin_inset Formula $\sigma_{\xi}^{2}\gg\sigma^{2}\|\mathbf{v}\|^{2}$
+\end_inset
+
+ i.e.
+ the reward noise variance is much higher than the variation of signal under exploration range 
+\begin_inset Formula $\sigma$
+\end_inset
+
+,
+ then it's effectively no gradient and no guidance.
+ 
+\end_layout
+
+\begin_layout Itemize
+In the other extreme,
+ when very little reward noise,
+ 
+\begin_inset Formula $\sigma_{\xi}^{2}\ll\sigma^{2}\|\mathbf{v}\|^{2}$
+\end_inset
+
+,
+ 
+\begin_inset Formula $s\approx1$
+\end_inset
+
+,
+ then 
+\begin_inset Formula $\rho=\frac{N+2}{d+N+1}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Via differentiation,
+ one can show,
+ 
+\begin_inset Formula $\rho$
+\end_inset
+
+ monotonically depends on signal to noise ratio 
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Full dimension 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ Increase the full space dim 
+\begin_inset Formula $d$
+\end_inset
+
+ will monotonically decrease the on manifold fraction 
+\begin_inset Formula $\rho$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Sample size per generation 
+\begin_inset Formula $N$
+\end_inset
+
+.
+ Increase the sample size 
+\begin_inset Formula $N$
+\end_inset
+
+ will monotonically increase the on manifold fraction 
+\begin_inset Formula $\rho$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Note this scaling is almost linear,
+ so to get half of the variance on manifold,
+ one need 
+\begin_inset Formula $(N+1)s\approx d$
+\end_inset
+
+.
+ In reality,
+ 
+\begin_inset Formula $d\sim10^{9}$
+\end_inset
+
+ ,
+ which makes this impossible.
+ 
+\end_layout
+
+\begin_layout Itemize
+In most realistic regimes 
+\begin_inset Formula $N\ll d$
+\end_inset
+
+,
+ which makes this on manifold ratio per step nearly negligible.
+ 
+\end_layout
+
+\end_deeper
 \begin_layout Subsubsection
-Quadratic landscape
+Quadratic landscape analysis
 \end_layout
 
 \begin_layout Standard
-Consider a quadratic potential centered / peaked at the origin.
+Consider a quadratic potential centered / peaked at the origin 
+\begin_inset Formula $\theta^{*}=0$
+\end_inset
+
+.
  
 \begin_inset Formula 
 \[
@@ -1393,6 +1637,1537 @@ R(\theta)=-\frac{1}{2}\theta^{\top}Q\theta
 \end_layout
 
 \begin_layout Standard
+At current state 
+\begin_inset Formula $\theta_{0}$
+\end_inset
+
+,
+ the reward at perturbed locations with observation noise are,
+ where 
+\begin_inset Formula $\xi_{i}\sim\mathcal{N}(0,1)$
+\end_inset
+
+,
+ 
+\begin_inset Formula $\epsilon_{i}\sim\mathcal{N}(0,I_{d})$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+R_{i} & =R(\theta_{0}+\sigma\epsilon_{i})+\sigma_{\xi}\xi_{i}\\
+ & =-\frac{1}{2}(\theta_{0}+\sigma\epsilon_{i})^{\top}Q(\theta_{0}+\sigma\epsilon_{i})+\sigma_{\xi}\xi_{i}\\
+ & =-\frac{1}{2}\theta_{0}^{\top}Q\theta_{0}-\sigma\,\theta_{0}^{\top}Q\epsilon_{i}-\frac{\sigma^{2}}{2}\epsilon_{i}^{\top}Q\epsilon_{i}+\sigma_{\xi}\xi_{i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Expectation of reward reads,
+ which is the population mean of reward samples 
+\begin_inset Formula 
+\[
+\mathbb{E}[R_{i}]=-\frac{1}{2}\theta_{0}^{\top}Q\theta_{0}-\frac{\sigma^{2}}{2}\mathrm{Tr}Q
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Center the rewards with population mean,
+ we define 
+\begin_inset Formula 
+\[
+\tilde{R}_{i}:=R_{i}-\mathbb{E}[R_{i}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Centered reward has three terms,
+ linear 
+\begin_inset Formula $A$
+\end_inset
+
+,
+ quadratic 
+\series bold
+
+\begin_inset Formula $B$
+\end_inset
+
+
+\series default
+,
+ and noise 
+\begin_inset Formula $C$
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\tilde{R}_{i}=\underbrace{-\sigma\,\theta_{0}^{\top}Q\epsilon_{i}}_{\text{linear }A}\underbrace{-\frac{\sigma^{2}}{2}(\epsilon_{i}^{\top}Q\epsilon_{i}-\mathrm{Tr}Q)}_{\text{quad }B}+\underbrace{\sigma_{\xi}\xi_{i}}_{\text{scalar noise }C}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One can abbreviate 
+\begin_inset Formula $\mathbf{v}:=Q^{\top}\theta_{0}$
+\end_inset
+
+ as the negative gradient.
+ 
+\end_layout
+
+\begin_layout Standard
+The weight update reads,
+ 
+\begin_inset Formula 
+\begin{align*}
+\Delta\theta & =\alpha\cdot\frac{1}{N}\sum_{i=1}^{N}Z_{i}\epsilon_{i}\\
+ & =\frac{\alpha}{N\sigma_{R}}\sum_{i=1}^{N}\tilde{R}_{i}\epsilon_{i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since perturbations 
+\begin_inset Formula $\tilde{R}_{i}\epsilon_{i}$
+\end_inset
+
+ are i.i.d.
+ sampled 
+\begin_inset Formula 
+\[
+\mathbb{E}[\Delta\theta]=\frac{\alpha}{\sigma_{R}}\mathbb{E}[\tilde{R}_{i}\epsilon_{i}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and 
+\begin_inset Formula 
+\[
+\mathrm{Cov}[\Delta\theta]=\frac{\alpha^{2}}{N\sigma_{R}^{2}}\mathrm{Cov}[\tilde{R}_{i}\epsilon_{i}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One observe that both 
+\begin_inset Formula $\tilde{R}_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\tilde{R}_{i}\epsilon_{i}$
+\end_inset
+
+ are 
+\series bold
+polynomial functions of gaussian random variables
+\series default
+ 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\xi_{i}$
+\end_inset
+
+ (up to 3rd order),
+ thus we can compute 
+\series bold
+their moment of any order
+\series default
+ via Wick-Isserlis theorem 
+\backslash
+cite,
+ writing out mean and covariance of them.
+\end_layout
+
+\begin_layout Standard
+Here are the specific calculations 
+\end_layout
+
+\begin_layout Paragraph
+Reward variance
+\end_layout
+
+\begin_layout Standard
+Note that all three terms 
+\begin_inset Formula $A,B,C$
+\end_inset
+
+ are centered 
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[A] & =0\\
+\mathbb{E}[B] & =0\\
+\mathbb{E}[C] & =0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Further 
+\begin_inset Formula $A\perp C$
+\end_inset
+
+,
+ 
+\begin_inset Formula $B\perp C$
+\end_inset
+
+ due to independence of noise,
+ and 
+\begin_inset Formula 
+\[
+\mathbb{E}[AB]=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+as it only has polynomial of 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ of odd order 1 and 3,
+ thus its expectation is 0.
+ Thus,
+ 
+\begin_inset Formula $A,B,C$
+\end_inset
+
+ are not correlated with one another.
+ Thus,
+ 
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Var}[\tilde{R}_{i}] & =\mathbb{E}[\tilde{R}_{i}^{2}]\\
+ & =\mathbb{E}[A^{2}]+\mathbb{E}[B^{2}]+\mathbb{E}[C^{2}]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+all cross terms vanish due to no correlation.
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[A^{2}] & =\mathbb{E}[(-\sigma\,\theta_{0}^{\top}Q\epsilon_{i})\cdot(-\sigma\,\theta_{0}^{\top}Q\epsilon_{i})]\\
+ & =\sigma^{2}\theta_{0}^{\top}QQ^{\top}\theta_{0}\\
+ & =\sigma^{2}\|\mathbf{v}\|^{2}
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\mathbb{E}[C^{2}]=\sigma_{\xi}^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[B^{2}] & =\mathbb{E}[(\frac{\sigma^{2}}{2}(\epsilon_{i}^{\top}Q\epsilon_{i}-\mathrm{Tr}Q))^{2}]\\
+ & =\frac{\sigma^{4}}{4}\mathbb{E}[\epsilon_{i}^{\top}Q\epsilon_{i}\cdot(\epsilon_{i}^{\top}Q\epsilon_{i}-\mathrm{Tr}Q)-\mathrm{Tr}Q\cdot(\epsilon_{i}^{\top}Q\epsilon_{i}-\mathrm{Tr}Q)]\\
+ & =\frac{\sigma^{4}}{4}\Big(\mathbb{E}[\epsilon_{i}^{\top}Q\epsilon_{i}\cdot\epsilon_{i}^{\top}Q\epsilon_{i}]-(\mathrm{Tr}Q)^{2}\Big)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The first quintic polynomial of 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ can be tackled by Wick-Isserelis theorem.
+ With slight mis-use of notation,
+ here we let 
+\begin_inset Formula $\epsilon_{a}$
+\end_inset
+
+ denote the 
+\begin_inset Formula $a$
+\end_inset
+
+th element of 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ vector.
+\end_layout
+
+\begin_layout Standard
+Then 
+\begin_inset Formula 
+\[
+\mathbb{E}[\epsilon_{a}\epsilon_{b}\epsilon_{c}\epsilon_{d}]=I_{ab}I_{cd}+I_{ad}I_{bc}+I_{ac}I_{bd}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+thus 
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[\epsilon_{i}^{\top}Q\epsilon_{i}\cdot\epsilon_{i}^{\top}Q\epsilon_{i}] & =\mathbb{E}[\sum_{a,b,c,d}Q_{ab}Q_{cd}\epsilon_{a}\epsilon_{b}\epsilon_{c}\epsilon_{d}]\\
+ & =\sum_{a,b,c,d}Q_{ab}Q_{cd}\mathbb{E}[\epsilon_{a}\epsilon_{b}\epsilon_{c}\epsilon_{d}]\\
+ & =\sum_{a,b,c,d}Q_{ab}Q_{cd}(\delta_{ab}\delta_{cd}+\delta_{ac}\delta_{bd}+\delta_{ad}\delta_{bc})\\
+ & =\mathrm{Tr}Q\mathrm{Tr}Q+\mathrm{Tr}[Q^{\top}Q]+\mathrm{Tr}[QQ]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus 
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[B^{2}] & =\frac{\sigma^{4}}{4}\Big(\mathbb{E}[\epsilon_{i}^{\top}Q\epsilon_{i}\cdot\epsilon_{i}^{\top}Q\epsilon_{i}]-(\mathrm{Tr}Q)^{2}\Big)\\
+ & =\frac{\sigma^{4}}{4}\Big((\mathrm{Tr}Q)^{2}+2\mathrm{Tr}[Q^{2}]-(\mathrm{Tr}Q)^{2}\Big)\\
+ & =\frac{\sigma^{4}}{2}\mathrm{Tr}[Q^{2}]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In sum,
+ the population variance of reward reads,
+ 
+\begin_inset Formula 
+\[
+\mathrm{Var}[\tilde{R}_{i}]=\sigma^{2}\|\mathbf{v}\|^{2}+\frac{\sigma^{4}}{2}\mathrm{Tr}[Q^{2}]+\sigma_{\xi}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the population standard deviation is 
+\begin_inset Formula 
+\[
+\sigma_{R}=\sqrt{\sigma^{2}\|\mathbf{v}\|^{2}+\frac{\sigma^{4}}{2}\mathrm{Tr}[Q^{2}]+\sigma_{\xi}^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Expectation of parameter update
+\end_layout
+
+\begin_layout Standard
+Next let's examine expectation of parameter change,
+ where the key is 
+\begin_inset Formula $\mathbb{E}[\tilde{R}_{i}\epsilon_{i}]$
+\end_inset
+
+,
+ decomposing into three terms
+\begin_inset Formula 
+\[
+\mathbb{E}[\tilde{R}_{i}\epsilon_{i}]=\mathbb{E}[A\epsilon_{i}]+\mathbb{E}[B\epsilon_{i}]+\mathbb{E}[C\epsilon_{i}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Second term vanish due to the odd order of Gaussian variable,
+ 
+\begin_inset Formula 
+\[
+\mathbb{E}[B\epsilon_{i}]=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Third term vanish due to independence 
+\begin_inset Formula $\epsilon_{i}\perp\xi_{i}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\mathbb{E}[C\epsilon_{i}]=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+First term is easy to calculate 
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[A\epsilon_{i}] & =\mathbb{E}[(-\sigma\,\theta_{0}^{\top}Q\epsilon_{i})\epsilon_{i}]\\
+ & =-\sigma\mathbb{E}[\epsilon_{i}(\epsilon_{i}^{\top}\mathbf{v})]\\
+ & =-\sigma\mathbf{v}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So in sum,
+ 
+\begin_inset Formula 
+\[
+\mathbb{E}[\tilde{R}_{i}\epsilon_{i}]=-\sigma\mathbf{v}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[\Delta\theta] & =\frac{\alpha}{\sigma_{R}}\mathbb{E}[\tilde{R}_{i}\epsilon_{i}]\\
+ & =\frac{-\alpha\sigma\mathbf{v}}{\sigma_{R}}\\
+ & =\frac{-\alpha\sigma\mathbf{v}}{\sqrt{\sigma^{2}\|\mathbf{v}\|^{2}+\frac{\sigma^{4}}{2}\mathrm{Tr}[Q^{2}]+\sigma_{\xi}^{2}}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which is on expectation aligned with local gradient direction,
+ but scaled by signal to noise ratio.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Variance of parameter update
+\end_layout
+
+\begin_layout Standard
+Finally,
+ let's examine variance of parameter change,
+ where the key is 
+\begin_inset Formula $\mathrm{Cov}[\tilde{R}_{i}\epsilon_{i}]$
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Cov}[\tilde{R}_{i}\epsilon_{i}] & =\mathbb{E}[\tilde{R}_{i}\epsilon_{i}(\tilde{R}_{i}\epsilon_{i})^{\top}]-\mathbb{E}[\tilde{R}_{i}\epsilon_{i}]\mathbb{E}[\tilde{R}_{i}\epsilon_{i}]^{\top}\\
+ & =\mathbb{E}[\tilde{R}_{i}^{2}\epsilon_{i}\epsilon_{i}^{\top}]-\sigma^{2}\mathbf{v}\mathbf{v}^{\top}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tackling the first term,
+ using the same logic (odd order and independence) to eliminate terms,
+ 
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[\tilde{R}_{i}^{2}\epsilon_{i}\epsilon_{i}^{\top}] & =\mathbb{E}[(A+B+C)^{2}\epsilon_{i}\epsilon_{i}^{\top}]\\
+ & =\mathbb{E}[(A^{2}+B^{2}+C^{2}+2AB+2BC+2AC)\epsilon_{i}\epsilon_{i}^{\top}]\\
+ & =\mathbb{E}[(A^{2}+B^{2}+C^{2})\epsilon_{i}\epsilon_{i}^{\top}]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tackle 
+\begin_inset Formula $C$
+\end_inset
+
+ term.
+ 
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[C^{2}\epsilon_{i}\epsilon_{i}^{\top}] & =\mathbb{E}[C^{2}]\mathbb{E}[\epsilon_{i}\epsilon_{i}^{\top}]\\
+ & =\sigma_{\xi}^{2}I_{d}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tackle 
+\series bold
+
+\begin_inset Formula $A$
+\end_inset
+
+
+\series default
+ term
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[A^{2}\epsilon_{i}\epsilon_{i}^{\top}] & =\mathbb{E}[(-\sigma\,\theta_{0}^{\top}Q\epsilon_{i})^{2}\epsilon_{i}\epsilon_{i}^{\top}]\\
+ & =\sigma^{2}\mathbb{E}[(\mathbf{v}^{\top}\epsilon_{i})^{2}\epsilon_{i}\epsilon_{i}^{\top}]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+using the same Wick theorem trick we have each element 
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[(\mathbf{v}^{\top}\epsilon_{i})^{2}\epsilon_{i}\epsilon_{i}^{\top}]_{cd} & =\mathbb{E}[\sum_{a,b}\mathbf{v}_{a}\mathbf{v}_{b}\epsilon_{a}\epsilon_{b}\epsilon_{c}\epsilon_{d}]\\
+ & =\sum_{a,b}\mathbf{v}_{a}\mathbf{v}_{b}\mathbb{E}[\epsilon_{a}\epsilon_{b}\epsilon_{c}\epsilon_{d}]\\
+ & =\sum_{a,b}\mathbf{v}_{a}\mathbf{v}_{b}(\delta_{ab}\delta_{cd}+\delta_{ac}\delta_{bd}+\delta_{ad}\delta_{cb})\\
+ & =\|\mathbf{v}\|^{2}\delta_{cd}+\mathbf{v}_{c}\mathbf{v}_{d}+\mathbf{v}_{d}\mathbf{v}_{c}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus,
+ 
+\begin_inset Formula 
+\[
+\mathbb{E}[A^{2}\epsilon_{i}\epsilon_{i}^{\top}]=\sigma^{2}(\|\mathbf{v}\|^{2}I_{d}+2\mathbf{v}\mathbf{v}^{\top})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Finally,
+ tackle 
+\begin_inset Formula $B$
+\end_inset
+
+ term 
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[B^{2}\epsilon_{i}\epsilon_{i}^{\top}] & =\mathbb{E}[(\frac{\sigma^{2}}{2}(\epsilon_{i}^{\top}Q\epsilon_{i}-\mathrm{Tr}Q))^{2}\epsilon_{i}\epsilon_{i}^{\top}]\\
+ & =\frac{\sigma^{4}}{4}\mathbb{E}[\Big((\epsilon_{i}^{\top}Q\epsilon_{i})^{2}-2\mathrm{Tr}Q\cdot\epsilon_{i}^{\top}Q\epsilon_{i}+(\mathrm{Tr}Q)^{2}\Big)\epsilon_{i}\epsilon_{i}^{\top}]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we encounter 2nd,
+ 4th and 6th order terms.
+ 
+\end_layout
+
+\begin_layout Standard
+2nd order term
+\begin_inset Formula 
+\[
+\mathbb{E}[(\mathrm{Tr}Q)^{2}\epsilon_{i}\epsilon_{i}^{\top}]=(\mathrm{Tr}Q)^{2}I_{d}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+4th order term 
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[\epsilon_{i}^{\top}Q\epsilon_{i}\cdot\epsilon_{i}\epsilon_{i}^{\top}]_{cd} & =\mathbb{E}[\sum_{a,b}Q_{ab}\epsilon_{a}\epsilon_{b}\epsilon_{c}\epsilon_{d}]\\
+ & =\sum_{a,b}Q_{ab}(\delta_{ab}\delta_{cd}+\delta_{ac}\delta_{bd}+\delta_{ad}\delta_{cb})\\
+ & =\mathrm{Tr}Q\cdot\delta_{cd}+Q_{cd}+Q_{dc}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[\epsilon_{i}^{\top}Q\epsilon_{i}\cdot\epsilon_{i}\epsilon_{i}^{\top}] & =\mathrm{Tr}Q\cdot I_{d}+Q+Q^{\top}\\
+ & =\mathrm{Tr}Q\cdot I_{d}+2Q
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+6th order term
+\begin_inset Formula 
+\[
+\mathbb{E}[\Big((\epsilon_{i}^{\top}Q\epsilon_{i})^{2}\Big)\epsilon_{i}\epsilon_{i}^{\top}]_{ef}=\mathbb{E}[\sum_{a,b,c,d}Q_{ab}Q_{cd}\epsilon_{a}\epsilon_{b}\epsilon_{c}\epsilon_{d}\epsilon_{e}\epsilon_{f}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note this has 
+\begin_inset Formula $C_{6}^{2}=15$
+\end_inset
+
+ pairings,
+ with some diagrammatic reasoning,
+ we can find topologically we have three types 
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[\Big((\epsilon_{i}^{\top}Q\epsilon_{i})^{2}\Big)\epsilon_{i}\epsilon_{i}^{\top}]_{ef} & =\mathbb{E}[\sum_{a,b,c,d}Q_{ab}Q_{cd}\epsilon_{a}\epsilon_{b}\epsilon_{c}\epsilon_{d}\epsilon_{e}\epsilon_{f}]\\
+ & =\sum_{a,b,c,d}Q_{ab}Q_{cd}\Big(\underbrace{\delta_{ab}\delta_{cd}\delta_{ef}}_{1\text{case}}+\underbrace{\delta_{ac}\delta_{bd}\delta_{ef}+...}_{2\text{case}}+\\
+ & \quad\quad\underbrace{\delta_{ae}\delta_{bf}\delta_{cd}+...}_{4\text{case}}+\underbrace{\delta_{ae}\delta_{cf}\delta_{bd}+...}_{8\text{case}}\Big)\\
+ & =((\mathrm{Tr}Q)^{2}+2\mathrm{Tr}Q^{2})\delta_{ef}+4\mathrm{Tr}Q\cdot Q_{ef}+8[Q^{2}]_{ef}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus 
+\begin_inset Formula 
+\[
+\mathbb{E}[\Big((\epsilon_{i}^{\top}Q\epsilon_{i})^{2}\Big)\epsilon_{i}\epsilon_{i}^{\top}]=((\mathrm{Tr}Q)^{2}+2\mathrm{Tr}Q^{2})I_{d}+4\mathrm{Tr}Q\cdot Q+8Q^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}[scale=1.0,
+ every node/.style=font=
+\backslash
+small]
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+          % helper macro for Π-shaped Q edge
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+newcommand{
+\backslash
+Qedge}[3]{
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+draw[dashed] (#1) |- ($(#1)!0.5!(#2)+(0,0.4)$) -| (#2)
+\end_layout
+
+\begin_layout Plain Layout
+
+              node[midway,above] {$#3$};
+\end_layout
+
+\begin_layout Plain Layout
+
+          }
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          % helper macro for external cross node
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+newcommand{
+\backslash
+crossnode}[3]{
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+node[draw,
+ cross out,
+ inner sep=2pt,
+ line width=0.8pt,
+ label=below:$#2$] (#1) at #3 {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          }
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          % -- Move titles up above diagrams to avoid overlap --
+\end_layout
+
+\begin_layout Plain Layout
+
+          % ---------- Type I ----------
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node at (0,3.2) {
+\backslash
+textbf{Type I:
+ $1$ diagram}};
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a1) at (-1.2,2) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b1) at (-0.6,2) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c1) at (0.4,2) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d1) at (1.0,2) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+crossnode{e1}{e}{(2.0,2)}
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+crossnode{f1}{f}{(2.8,2)}
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+Qedge{a1}{b1}{Q_{ab}}
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+Qedge{c1}{d1}{Q_{cd}}
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+draw (e1) -- (f1);
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+draw (a1) to[out=0,in=180] (b1);
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+draw (c1) to[out=0,in=180] (d1);
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node at (0.8,1.35) {$
+\backslash
+Rightarrow (
+\backslash
+mathrm{Tr}Q)^2
+\backslash
+,
+\backslash
+delta_{ef}$};
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          % ---------- Type II ----------
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node at (0,0.2) {
+\backslash
+textbf{Type II:
+ $2$ diagrams}};
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a2) at (-1.2,-1) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b2) at (-0.6,-1) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c2) at (0.4,-1) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d2) at (1.0,-1) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+crossnode{e2}{e}{(2.0,-1)}
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+crossnode{f2}{f}{(2.8,-1)}
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+Qedge{a2}{b2}{Q_{ab}}
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+Qedge{c2}{d2}{Q_{cd}}
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+draw (a2) to[out=20,in=160] (c2);
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+draw (b2) to[out=20,in=160] (d2);
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+draw (e2) -- (f2);
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node at (0.8,-1.65) {$
+\backslash
+Rightarrow 2
+\backslash
+,
+\backslash
+mathrm{Tr}(Q^2)
+\backslash
+,
+\backslash
+delta_{ef}$};
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          % ---------- Type III ----------
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node at (7,3.2) {
+\backslash
+textbf{Type III:
+ $4$ diagrams}};
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a3) at (5.5,2) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b3) at (6.1,2) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c3) at (7.1,2) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d3) at (7.7,2) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+crossnode{e3}{e}{(8.7,2)}
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+crossnode{f3}{f}{(9.5,2)}
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+Qedge{a3}{b3}{Q_{ab}}
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+Qedge{c3}{d3}{Q_{cd}}
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+draw (c3) to[out=15,in=165] (e3);
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+draw (d3) to[out=15,in=165] (f3);
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+draw (a3) to[out=0,in=180] (b3);
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node at (7.5,1.35) {$
+\backslash
+Rightarrow 4
+\backslash
+,
+\backslash
+mathrm{Tr}(Q)
+\backslash
+,Q_{ef}$};
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          % ---------- Type IV ----------
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node at (7,0.2) {
+\backslash
+textbf{Type IV:
+ $8$ diagrams}};
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$a$] (a4) at (5.5,-1) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$b$] (b4) at (6.1,-1) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$c$] (c4) at (7.1,-1) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+node[circle,fill=black,inner sep=1.5pt,label=below:$d$] (d4) at (7.7,-1) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+crossnode{e4}{e}{(9.0,-1)}
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+crossnode{f4}{f}{(10.0,-1)}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+Qedge{a4}{b4}{Q_{ab}}
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+Qedge{c4}{d4}{Q_{cd}}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+draw (a4) to[out=15,in=165] (e4);
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+draw (b4) to[out=0,in=180] (c4);
+\end_layout
+
+\begin_layout Plain Layout
+
+            
+\backslash
+draw (d4) to[out=15,in=165] (f4);
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+          
+\backslash
+node at (7.5,-1.65) {$
+\backslash
+Rightarrow 8
+\backslash
+,(Q^2)_{ef}$};
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Wick contraction classes for 
+\begin_inset Formula $\mathbb{E}[(\epsilon^{\top}Q\epsilon)^{2}\,\epsilon_{e}\epsilon_{f}]$
+\end_inset
+
+,
+ with external loose ends 
+\begin_inset Formula $e,f$
+\end_inset
+
+ shown as crosses.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In summary
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[B^{2}\epsilon_{i}\epsilon_{i}^{\top}] & =\frac{\sigma^{4}}{4}\mathbb{E}[\Big((\epsilon_{i}^{\top}Q\epsilon_{i})^{2}-2\mathrm{Tr}Q\cdot\epsilon_{i}^{\top}Q\epsilon_{i}+(\mathrm{Tr}Q)^{2}\Big)\epsilon_{i}\epsilon_{i}^{\top}]\\
+ & =\frac{\sigma^{4}}{4}\Big[((\mathrm{Tr}Q)^{2}+2\mathrm{Tr}Q^{2})I_{d}+4\mathrm{Tr}Q\cdot Q+8Q^{2}\\
+ & \quad-2\mathrm{Tr}Q\cdot(\mathrm{Tr}Q\cdot I_{d}+2Q)\\
+ & \quad+(\mathrm{Tr}Q)^{2}I_{d}\Big]\\
+ & =\frac{\sigma^{4}}{4}\Big[(2\mathrm{Tr}Q^{2})I_{d}+8Q^{2}\Big]\\
+ & =\frac{\sigma^{4}}{2}\Big[(\mathrm{Tr}Q^{2})\cdot I_{d}+4Q^{2}\Big]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[\tilde{R}_{i}^{2}\epsilon_{i}\epsilon_{i}^{\top}] & =\mathbb{E}[(A^{2}+B^{2}+C^{2})\epsilon_{i}\epsilon_{i}^{\top}]\\
+ & =\sigma^{2}(\|\mathbf{v}\|^{2}I_{d}+2\mathbf{v}\mathbf{v}^{\top})+\frac{\sigma^{4}}{2}\Big[(\mathrm{Tr}Q^{2})\cdot I_{d}+4Q^{2}\Big]+\sigma_{\xi}^{2}I_{d}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The covariance term reads 
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Cov}[\tilde{R}_{i}\epsilon_{i}] & =\mathbb{E}[\tilde{R}_{i}^{2}\epsilon_{i}\epsilon_{i}^{\top}]-\sigma^{2}\mathbf{v}\mathbf{v}^{\top}\\
+ & =\sigma^{2}(\|\mathbf{v}\|^{2}I_{d}+\mathbf{v}\mathbf{v}^{\top})+\frac{\sigma^{4}}{2}\Big[(\mathrm{Tr}Q^{2})\cdot I_{d}+4Q^{2}\Big]+\sigma_{\xi}^{2}I_{d}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall that 
+\begin_inset Formula $\mathrm{Var}[\tilde{R}_{i}]=\sigma^{2}\|\mathbf{v}\|^{2}+\frac{\sigma^{4}}{2}\mathrm{Tr}[Q^{2}]+\sigma_{\xi}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{Cov}[\tilde{R}_{i}\epsilon_{i}]=\sigma^{2}\mathbf{v}\mathbf{v}^{\top}+2\sigma^{4}Q^{2}+\sigma_{R}^{2}I_{d}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus in summary we have mean and covariance of parameter update,
+ 
+\begin_inset Formula $\mathbf{v}:=Q\theta_{0}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Cov}[\Delta\theta] & =\frac{\alpha^{2}}{N\sigma_{R}^{2}}\mathrm{Cov}[\tilde{R}_{i}\epsilon_{i}]\\
+ & =\frac{\alpha^{2}}{N\sigma_{R}^{2}}\Big(\sigma^{2}\mathbf{v}\mathbf{v}^{\top}+2\sigma^{4}Q^{2}+\sigma_{R}^{2}I_{d}\Big)
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[\Delta\theta] & =\frac{\alpha}{\sigma_{R}}\mathbb{E}[\tilde{R}_{i}\epsilon_{i}]\\
+ & =\frac{-\alpha\sigma\mathbf{v}}{\sigma_{R}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Multi-step analysis for quadratic landscape
+\end_layout
+
+\begin_layout Standard
+In a sense we could write down the iteration as 
+\begin_inset Formula 
+\begin{align*}
+\theta_{1}-\theta_{0} & =\frac{-\alpha\sigma\mathbf{v}}{\sigma_{R}}+\eta_{0}\\
+ & =-\frac{\alpha\sigma}{\sigma_{R}}Q\theta_{0}+\eta_{0}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus
+\begin_inset Formula 
+\[
+\theta_{t+1}=\Big(I-\frac{\alpha\sigma}{\sigma_{R}}Q\Big)\ \theta_{t}+\eta_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where,
+ 
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Cov}[\eta_{t}] & =\frac{\alpha^{2}}{N\sigma_{R}^{2}}\Big(\sigma^{2}\mathbf{v}\mathbf{v}^{\top}+2\sigma^{4}Q^{2}+\sigma_{R}^{2}I_{d}\Big)\\
+ & =\frac{\alpha^{2}}{N}I_{d}+\frac{\alpha^{2}}{N\sigma_{R}^{2}}\Big(\sigma^{2}Q\theta_{t}\theta_{t}^{\top}Q+2\sigma^{4}Q^{2}\Big)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to simplify we could assume it's Gaussian,
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Quadratic landscape
+\end_layout
+
+\begin_layout Plain Layout
+Consider a quadratic potential centered / peaked at the origin.
+ 
+\begin_inset Formula 
+\[
+R(\theta)=-\frac{1}{2}\theta^{\top}Q\theta
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 Thus the perturbed rewards are 
 \begin_inset Formula 
 \begin{align*}
@@ -1405,7 +3180,7 @@ R(\theta_{0}+\sigma\epsilon) & =-\frac{1}{2}(\theta_{0}+\sigma\epsilon)^{\top}Q(
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Due to normalization,
  the shared shift term can be ignored 
 \begin_inset Formula 
@@ -1418,7 +3193,7 @@ R(\theta_{0}+\sigma\epsilon)\equiv-\sigma\,\theta_{0}^{\top}Q\epsilon-\frac{\sig
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Consider the eigen decomposition of 
 \begin_inset Formula $Q$
 \end_inset
@@ -1442,7 +3217,7 @@ R(\theta_{0}+\sigma\epsilon)\equiv-\sigma\sum_{k=1}^{d}\lambda_{k}(\theta_{0}^{\
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Consider the simplified assumption where the quadratic term is much smaller compared to the linear term,
  due to 
 \begin_inset Formula $\sigma^{2}$
@@ -1468,7 +3243,7 @@ R_{\text{lin}}(\theta_{0}+\sigma\epsilon)\equiv-\sigma\sum_{k=1}^{d}\lambda_{k}(
 Population mean and std of reward
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Since 
 \begin_inset Formula $\epsilon\sim\mathcal{N}(0,I)$
 \end_inset
@@ -1482,7 +3257,7 @@ Since
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{align*}
 R_{\text{lin}}(\theta_{0}+\sigma\epsilon)=-\sigma\,\theta_{0}^{\top}Q\epsilon & \sim\mathcal{N}(0,\sigma^{2}\,\theta_{0}^{\top}QQ^{\top}\theta_{0})\\
@@ -1494,7 +3269,7 @@ R_{\text{lin}}(\theta_{0}+\sigma\epsilon)=-\sigma\,\theta_{0}^{\top}Q\epsilon & 
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 It's zero mean and variance as 
 \begin_inset Formula 
 \[
@@ -1515,11 +3290,11 @@ m_{lin,pop}=\mathbb{E}[R_{\text{lin}}(\theta_{0}+\sigma\epsilon)]=0
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Empirical mean and std 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 \]
@@ -1529,7 +3304,7 @@ Empirical mean and std
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Using population mean and std to normalize,
  
 \begin_inset Formula 
@@ -1546,7 +3321,7 @@ Using population mean and std to normalize,
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Simplify the notation 
 \begin_inset Formula $\mathbf{v}:=Q\theta_{0}$
 \end_inset
@@ -1578,7 +3353,7 @@ Simplify the notation
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 We can see 
 \begin_inset Formula $\epsilon_{i}^{\parallel}$
 \end_inset
@@ -1601,7 +3376,7 @@ We can see
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 We note the projection operator to the space orthogonal to 
 \begin_inset Formula $\mathbf{v}$
 \end_inset
@@ -1626,11 +3401,11 @@ We note the projection operator to the space orthogonal to
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 With the scaling terms we have 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 -\frac{\alpha\sigma}{N\sigma_{lin,pop}}\sum_{i=1}^{N}(\mathbf{v}^{\top}\epsilon_{i}^{\parallel})\epsilon_{i}^{\perp}|r_{i}\sim\mathcal{N}(0,\frac{\alpha^{2}\sigma^{2}}{N^{2}\sigma_{lin,pop}^{2}}\sum_{i=1}^{N}r_{i}^{2}P^{\perp})
@@ -1641,7 +3416,7 @@ With the scaling terms we have
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Note that 
 \begin_inset Formula $\sigma_{lin,pop}^{2}=\sigma^{2}\,\theta_{0}^{\top}Q^{2}\theta_{0}=\sigma^{2}\,\mathbf{v}^{\top}\mathbf{v}=\sigma^{2}\|\mathbf{v}\|^{2}$
 \end_inset
@@ -1653,7 +3428,7 @@ Note that
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{align*}
 \mathbb{E}\Big[\frac{\alpha^{2}\sigma^{2}}{N^{2}\sigma_{lin,pop}^{2}}\sum_{i=1}^{N}r_{i}^{2}\Big] & =\mathbb{E}\Big[\frac{\alpha^{2}\sigma^{2}}{N^{2}\sigma^{2}\|\mathbf{v}\|^{2}}N\|\mathbf{v}\|^{2}\Big]\\
@@ -1666,11 +3441,11 @@ Note that
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Thus we can say 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 P^{\perp}\Delta\theta\sim\mathcal{N}(0,\frac{\alpha^{2}}{N}P^{\perp})
@@ -1681,14 +3456,14 @@ P^{\perp}\Delta\theta\sim\mathcal{N}(0,\frac{\alpha^{2}}{N}P^{\perp})
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 i.e.
  the off gradient component should be isotropic Gaussian,
  with the same behavior as unguided random walk.
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 For the on manifold components,
  we can re-express the on manifold variable by a scalar 
 \begin_inset Formula $\epsilon_{i}^{\parallel}=\frac{\mathbf{v}}{\|\mathbf{v}\|}z_{i}$
@@ -1711,18 +3486,18 @@ For the on manifold components,
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula $(\sum_{i=1}^{N}z_{i}^{2})\sim\chi_{N}^{2}$
 \end_inset
 
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Bringing back the coefficieints 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{align*}
 \mathbb{E}\Big[-\frac{\alpha\sigma}{N\sigma_{lin,pop}}(\sum_{i=1}^{N}z_{i}^{2})\Big] & =-\frac{\alpha\sigma}{N\sigma_{lin,pop}}N\\
@@ -1735,7 +3510,7 @@ Bringing back the coefficieints
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{align*}
 Var[-\frac{\alpha\sigma}{N\sigma_{lin,pop}}(\sum_{i=1}^{N}z_{i}^{2})] & =\Big(\frac{\alpha\sigma}{N\sigma_{lin,pop}}\Big)^{2}Var[\sum_{i=1}^{N}z_{i}^{2}]\\
@@ -1750,7 +3525,7 @@ Var[-\frac{\alpha\sigma}{N\sigma_{lin,pop}}(\sum_{i=1}^{N}z_{i}^{2})] & =\Big(\f
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Thus 
 \begin_inset Formula 
 \[
@@ -1762,7 +3537,7 @@ P^{\parallel}\Delta\theta=-\frac{\alpha\sigma}{N\sigma_{lin,pop}}(\sum_{i=1}^{N}
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 \mathbb{E}[P^{\parallel}\Delta\theta]=-\frac{\alpha}{\|\mathbf{v}\|}\mathbf{v}
@@ -1773,7 +3548,7 @@ P^{\parallel}\Delta\theta=-\frac{\alpha\sigma}{N\sigma_{lin,pop}}(\sum_{i=1}^{N}
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 Var[P^{\parallel}\Delta\theta]=\frac{\sigma^{2}}{2N\|\mathbf{v}\|^{2}}\mathbf{v}\mathbf{v}^{\top}
@@ -1784,7 +3559,7 @@ Var[P^{\parallel}\Delta\theta]=\frac{\sigma^{2}}{2N\|\mathbf{v}\|^{2}}\mathbf{v}
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Thus the expected movement along gradient is 
 \begin_inset Formula $\alpha$
 \end_inset
@@ -1795,6 +3570,11 @@ Thus the expected movement along gradient is
 
 .
  
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
