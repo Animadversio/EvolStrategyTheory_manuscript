@@ -14,6 +14,7 @@
 \usetikzlibrary{shapes,arrows,calc}
 
 \newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
 \begin{document}
 
 
@@ -185,11 +186,12 @@
     Let $R(\theta) = -\frac{1}{2}\theta^\top Q\theta$ with $Q \succeq 0$,
     current iterate $\theta_0$, and $\mathbf{v} := Q\theta_0$
     (the negative gradient). Define
-    \[
+    \begin{equation}
         \sigma_R^2 := \sigma^2\|\mathbf{v}\|^2
                     + \tfrac{\sigma^4}{2}\operatorname{Tr}[Q^2]
-                    + \sigma_\xi^2.
-    \]
+                    + \sigma_\xi^2
+        \label{eq:es-quadratic-sigmaR}
+    \end{equation}
     The mean and covariance of the ES parameter update are
     \[
         \mathbb{E}[\Delta\theta]
@@ -212,6 +214,43 @@
     stochastic fluctuations along the principal curvature directions
     of $Q$.
 \end{proposition}
+
+\begin{proposition}[Dynamics of ES on Quadratic Landscape]
+  Consider the simplified evolution
+  \[
+  \theta_{t+1} = H\theta_t + \eta_t, \qquad \eta_t \sim \mathcal{N}\!\left(0,\tfrac{\alpha^2}{N}I_d\right),
+  \]
+  where $H = I - \frac{\alpha\sigma}{\sigma_R}Q = \sum_k \left(1 - \frac{\alpha\sigma}{\sigma_R}\lambda_k\right)\mathbf{u}_k\mathbf{u}_k^\top$. 
+  \footnote{$\sigma_R$ here is a fixed constant, not changing across iterations as in the full ES update in Equation \ref{eq:es-quadratic-sigmaR}.}
+  Let $\gamma_k := 1 - \frac{\alpha\sigma}{\sigma_R}\lambda_k$ denote the contraction factor along eigendirection $\mathbf{u}_k$. Then the projected mean and variance evolve as
+  \[
+  \mathbb{E}[\mathbf{u}_k^\top\theta_t] = \gamma_k^t\,\mathbf{u}_k^\top\theta_0,
+  \]
+  \[
+  \mathrm{Var}[\mathbf{u}_k^\top\theta_t] = \frac{\alpha^2}{N}\cdot\begin{cases} \dfrac{1 - \gamma_k^{2t}}{1-\gamma_k^2}, & \gamma_k^2 \neq 1, \\[6pt] t, & \gamma_k^2 = 1. \end{cases}
+  \]
+  The process converges in mean and variance along direction $\mathbf{u}_k$ if and only if $|\gamma_k| < 1$, i.e.,
+  \[
+  0 < \lambda_k < \frac{2\sigma_R}{\alpha\sigma}.
+  \]
+  In this regime, the asymptotic variance is
+  \[
+  \lim_{t\to\infty}\mathrm{Var}[\mathbf{u}_k^\top\theta_t] = \frac{\alpha^2}{N}\cdot\frac{1}{1-\gamma_k^2},
+  \]
+  and the convergence timescale is $\tau_k = -\log 2\,/\log\gamma_k^2$.
+  \end{proposition}
+  
+  \begin{remark}[Stability conditions]
+  The three failure modes each correspond to a violation of $|\gamma_k|<1$. Flat directions ($\lambda_k = 0$) satisfy $\gamma_k = 1$, so both the mean and variance grow as a pure random walk: the optimizer drifts diffusively and never localizes. Concave directions ($\lambda_k < 0$) give $\gamma_k > 1$, causing exponential divergence of both mean and variance --- the landscape actively repels the iterates. Overly sharp convex directions ($\lambda_k \geq 2\sigma_R/\alpha\sigma$) give $|\gamma_k| \geq 1$ for a different reason: the ES step overshoots, analogous to gradient descent with too large a learning rate. Note that because the ES learning rate is $\alpha = \sigma/2$, this threshold becomes $\lambda_k = 4\sigma_R/\sigma^2$.
+  \end{remark}
+  
+  \begin{remark}[Optimal curvature]
+  Within the stable regime, the convergence speed and asymptotic variance are jointly controlled by $\gamma_k^2$. Directions with $\lambda_k \approx \sigma_R/\alpha\sigma$ achieve $\gamma_k \approx 0$, which simultaneously minimizes the convergence timescale ($\tau_k \to 1$ iteration) and the asymptotic variance ($\approx \alpha^2/N$). Directions near the stability boundary $\lambda_k \to 0^+$ or $\lambda_k \to (2\sigma_R/\alpha\sigma)^-$ suffer slow convergence and inflated variance. Thus the landscape curvature relative to the ratio $\sigma_R/\alpha\sigma$ plays the role of an effective condition number for the ES dynamics.
+  \end{remark}
+  
+  \begin{remark}[Role of noise scale]
+  The asymptotic variance $\frac{\alpha^2}{N(1-\gamma_k^2)}$ reveals the expected tension between exploration and precision: increasing the population size $N$ suppresses variance linearly, while the landscape geometry (through $\gamma_k^2$) sets a floor on the minimum achievable uncertainty. In well-conditioned directions, $1 - \gamma_k^2 \approx 2\frac{\alpha\sigma}{\sigma_R}\lambda_k$, so the asymptotic variance scales as $\frac{\alpha\sigma_R}{2N\sigma\lambda_k}$, inversely proportional to both curvature and the signal-to-noise ratio $\sigma/\sigma_R$.
+  \end{remark}
     
 
 \section{Theory of Evolutionary Strategy}
@@ -994,7 +1033,7 @@ where,
 \begin{align*}
 \mathrm{Cov}[\eta_{t}] & =\frac{\alpha^{2}}{N\sigma_{R}^{2}}\Big(\sigma^{2}\mathbf{v}\mathbf{v}^{\top}+2\sigma^{4}Q^{2}+\sigma_{R}^{2}I_{d}\Big)\\
  & =\frac{\alpha^{2}}{N}I_{d}+\frac{\alpha^{2}}{N\sigma_{R}^{2}}\Big(\sigma^{2}Q\theta_{t}\theta_{t}^{\top}Q+2\sigma^{4}Q^{2}\Big)
-\end{align*}
+\end{align*} 
 
 and 
 \begin{align*}
