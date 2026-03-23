@@ -918,14 +918,64 @@ Recall that $\mathrm{Var}[\tilde{R}_{i}]=\sigma^{2}\|\mathbf{v}\|^{2}+\frac{\sig
 
 Thus in summary we have mean and covariance of parameter update, $\mathbf{v}:=Q\theta_{0}$
 \begin{align*}
-\mathrm{Cov}[\Delta\theta] & =\frac{\alpha^{2}}{N\sigma_{R}^{2}}\mathrm{Cov}[\tilde{R}_{i}\epsilon_{i}]\\
- & =\frac{\alpha^{2}}{N\sigma_{R}^{2}}\Big(\sigma^{2}\mathbf{v}\mathbf{v}^{\top}+2\sigma^{4}Q^{2}+\sigma_{R}^{2}I_{d}\Big)
-\end{align*}
-\begin{align*}
 \mathbb{E}[\Delta\theta] & =\frac{\alpha}{\sigma_{R}}\mathbb{E}[\tilde{R}_{i}\epsilon_{i}]\\
  & =\frac{-\alpha\sigma\mathbf{v}}{\sigma_{R}}
 \end{align*}
+\begin{align*}
+\mathrm{Cov}[\Delta\theta] & =\frac{\alpha^{2}}{N\sigma_{R}^{2}}\mathrm{Cov}[\tilde{R}_{i}\epsilon_{i}]\\
+ & =\frac{\alpha^{2}}{N\sigma_{R}^{2}}\Big(\sigma^{2}\mathbf{v}\mathbf{v}^{\top}+2\sigma^{4}Q^{2}+\sigma_{R}^{2}I_{d}\Big)\\
+ & =\frac{\alpha^{2}}{N}I_{d}+\frac{\alpha^{2}}{N\sigma_{R}^{2}}\Big(\sigma^{2}\mathbf{v}\mathbf{v}^{\top}+2\sigma^{4}Q^{2}\Big)
+\end{align*}
 
+the covariance of weight update has three terms 
+\begin{itemize}
+\item An isotropic variance term from the Gaussian exploration per se. $\frac{\alpha^{2}}{N}I_{d}$
+\item A rank-1 term along current gradient direction $\mathbf{v}$, $\frac{\alpha^{2}\sigma^{2}}{N\sigma_{R}^{2}}\mathbf{v}\mathbf{v}^{\top}$
+\item A term corresponding to landscape curvature, i.e. higher variance
+along higher curvature directions, $\frac{2\sigma^{4}\alpha^{2}}{N\sigma_{R}^{2}}Q^{2}$
+\end{itemize}
+
+\paragraph{Order analysis of quadratic landscape }
+
+Note the order of the terms, using 1st term as reference,
+
+the 2nd term is of the order $\frac{\sigma^{2}}{\sigma_{R}^{2}}\|\mathbf{v}\|^{2}$
+on the gradient direction 
+
+the 3rd term is of the order $\frac{2\sigma^{4}}{\sigma_{R}^{2}}\mathbf{u}^{\top}Q^{2}\mathbf{u}$
+along each direction $\mathbf{u}$. 
+
+Since in practise, $2\sigma^{2}$ is very small $4.5\times10^{-6}$,
+generally the quadratic term is small and is small perturbation. Compare
+the 2nd and 3rd term along a specific direction $\mathbf{u}$, we'd
+derive the condition when the 3rd quadratic term has comparable effect.
+\begin{align*}
+\frac{2\sigma^{4}}{\sigma_{R}^{2}}\mathbf{u}^{\top}Q^{2}\mathbf{u} & \approx\frac{\sigma^{2}}{\sigma_{R}^{2}}\|\mathbf{v}\|^{2}\\
+2\sigma^{2}\mathbf{u}^{\top}Q^{2}\mathbf{u} & \approx\theta_{0}^{\top}Q^{2}\theta_{0}\\
+\mathbf{u}^{\top}Q^{2}\mathbf{u} & \approx\frac{1}{2\sigma^{2}}\theta_{0}^{\top}Q^{2}\theta_{0}
+\end{align*}
+
+Assume $\mathbf{u}$ is an eigenvector of $Q$ with eigenvalue $\lambda_{k}$,
+\begin{align*}
+\lambda_{k}^{2} & \approx\frac{1}{2\sigma^{2}}\theta_{0}^{\top}Q^{2}\theta_{0}\\
+\lambda_{k} & \approx\frac{\|\mathbf{v}\|}{\sqrt{2}\sigma}
+\end{align*}
+\[
+\lambda_{k}^{2}\approx\frac{1}{2\sigma^{2}}\sum_{i=1}^{d}\lambda_{i}^{2}(\theta_{0}^{\top}\mathbf{u}_{i})^{2}
+\]
+
+This shows that the current gradient norm $\|\mathbf{v}\|$ needs
+to be much smaller (at least $\sigma$ times) and the eigenvalue /
+curvature of the probe direction needs to be sharp enough for the
+3rd term to be comparable to the 2nd term. Two scenarios this could
+happen 
+\begin{itemize}
+\item For really sharply curved directions $\lambda_{k}$ this is usually
+be true. 
+\item The current state $\theta_{0}$ is close to optimum $\theta^{*}=0$
+or lies in the vast valley of degenerate solution, i.e. $Q\theta_{0}=0$,
+$\theta_{0}$ in the null space of $Q$. 
+\end{itemize}
 
 \subsubsection{Multi-step analysis for quadratic landscape}
 
@@ -946,7 +996,173 @@ where,
  & =\frac{\alpha^{2}}{N}I_{d}+\frac{\alpha^{2}}{N\sigma_{R}^{2}}\Big(\sigma^{2}Q\theta_{t}\theta_{t}^{\top}Q+2\sigma^{4}Q^{2}\Big)
 \end{align*}
 
+and 
+\begin{align*}
+\sigma_{R} & =\sqrt{\sigma^{2}\|\mathbf{v}\|^{2}+\frac{\sigma^{4}}{2}\mathrm{Tr}[Q^{2}]+\sigma_{\xi}^{2}}\\
+ & =\sqrt{\sigma^{2}\theta_{t}^{\top}Q^{2}\theta_{t}+\frac{\sigma^{4}}{2}\mathrm{Tr}[Q^{2}]+\sigma_{\xi}^{2}}
+\end{align*}
+
 to simplify we could assume it's Gaussian, 
+
+\paragraph{Simplified ES-optimization process }
+
+Consider the simplified version, where the $\sigma_{R}$ is held constant. 
+
+To simplify it even more, assume $\eta_{t}$ is Gaussian and isotropic
+each step $\frac{\alpha^{2}}{N}I_{d}$, i.e. ignore the 2nd and 3rd
+term $\frac{\alpha^{2}}{N\sigma_{R}^{2}}\Big(\sigma^{2}Q\theta_{t}\theta_{t}^{\top}Q+2\sigma^{4}Q^{2}\Big)$
+
+Thus the optimization iteration reads, 
+\[
+\theta_{t+1}=\Big(I-\frac{\alpha\sigma}{\sigma_{R}}Q\Big)\theta_{t}+\eta_{t},\quad\eta_{t}\sim\mathcal{N}(0,\frac{\alpha^{2}}{N}I_{d})
+\]
+
+This process is known as vector autoregression VAR(1) or discrete-time
+OU process. We can write down the generative process of $\theta_{T}$
+recursively. 
+\begin{align*}
+\theta_{t} & =H\theta_{t-1}+\eta_{t-1}\\
+ & =H(H\theta_{t-2}+\eta_{t-2})+\eta_{t-1}\\
+ & =H^{2}\theta_{t-2}+H\eta_{t-2}+\eta_{t-1}\\
+ & =H^{3}\theta_{t-3}+H^{2}\eta_{t-3}+H\eta_{t-2}+\eta_{t-1}\\
+ & =H^{t}\theta_{0}+\sum_{i=1}^{t}H^{i-1}\eta_{t-i}
+\end{align*}
+
+Note let $\mathbf{u}_{k},\lambda_{k}$ be the eigenvector and eigenvalue
+of $Q$, then 
+\begin{align*}
+H & =I-\frac{\alpha\sigma}{\sigma_{R}}Q\\
+ & =\sum_{k=1}^{d}(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})\mathbf{u}_{k}\mathbf{u}_{k}^{\top}
+\end{align*}
+ 
+
+In this simplification, the distribution comes from the independent
+Gaussian random vectors $\{\eta_{i}\}$, thus it's still Gaussian
+distributed. 
+
+Thus we can write down the expectation, which only depends on the
+first term. 
+\begin{align*}
+\mathbb{E}[\theta_{t}] & =H^{t}\theta_{0}\\
+ & =\sum_{k=1}^{d}(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{t}\mathbf{u}_{k}\mathbf{u}_{k}^{\top}\theta_{0}
+\end{align*}
+
+Asymptotically, 
+\begin{align*}
+\lim_{t\to\infty}\mathbb{E}[\theta_{t}] & =\lim_{t\to\infty}H^{t}\theta_{0}\\
+ & =\lim_{t\to\infty}\sum_{k=1}^{d}(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{t}\mathbf{u}_{k}\mathbf{u}_{k}^{\top}\theta_{0}
+\end{align*}
+
+\begin{itemize}
+\item For flat dimensions $\lambda_{k}=0$, then $\lim_{t\to\infty}(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{t}=1$,
+thus on expectation the solution won't move on that direction $\lim_{t\to\infty}\mathbb{E}[\mathbf{u}_{k}^{\top}\theta_{t}]=\mathbf{u}_{k}^{\top}\theta_{0}$
+\item If $|1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k}|>1$, this will
+diverge to infinity. $\lim_{t\to\infty}\mathbb{E}[\mathbf{u}_{k}^{\top}\theta_{t}]=\infty$ 
+\begin{itemize}
+\item Specifically, when $\lambda_{k}<0$ concave dimensions
+\item or for $\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k}>2$, this will
+diverge. This could happen for very sharply curved directions where
+curvature exceeds $\lambda_{k}>2\frac{\sigma_{R}}{\alpha\sigma}$.
+Note for gradient descent this could also be caused by too high learning
+rate, but here $\alpha=\sigma/2$. 
+\end{itemize}
+\end{itemize}
+The covariance depends on the summation $\sum_{i=1}^{t}H^{i-1}\eta_{t-i}$,
+using the i.i.d. property of the noise $\{\eta_{i}\}$ and the Gaussian
+distribution of noise, 
+\begin{align*}
+\mathrm{Cov}[\theta_{t}] & =\mathrm{Cov}[\sum_{i=1}^{t}H^{i-1}\eta_{t-i}]\\
+ & =\sum_{i=1}^{t}\mathrm{Cov}[H^{i-1}\eta_{t-i}]\\
+ & =\sum_{i=1}^{t}(H^{i-1})\mathrm{Cov}[\eta_{t-i}](H^{i-1})^{\top}\\
+ & =\sum_{i=1}^{t}(H^{i-1})^{2}\frac{\alpha^{2}}{N}I_{d}\\
+ & =\frac{\alpha^{2}}{N}\sum_{i=0}^{t-1}H^{2i}
+\end{align*}
+
+Thus the variance along one eigen axis is the sum of this series.
+\begin{align*}
+\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}] & =\frac{\alpha^{2}}{N}\mathbf{u}_{k}^{\top}\sum_{i=0}^{t-1}H^{2i}\mathbf{u}_{k}\\
+ & =\frac{\alpha^{2}}{N}\sum_{i=0}^{t-1}(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2i}
+\end{align*}
+
+Using the formula for finite term sum of geometric series, 
+\[
+\sum_{k=0}^{t-1}x^{k}=\begin{cases}
+\dfrac{1-x^{t}}{1-x}, & x\neq1,\\[6pt]
+t, & x=1.
+\end{cases}
+\]
+
+note that for finite terms this identity holds for $|x|>1$. 
+
+\noindent\begin{minipage}[t]{1\columnwidth}%
+Short derivation
+
+\begin{align*}
+1+x+x^{2}+...x^{t-1} & =S\\
+S+x^{t}(\sum_{i=0}^{\infty}x^{i}) & =(\sum_{i=0}^{\infty}x^{i})\\
+S & =(1-x^{t})(\sum_{i=0}^{\infty}x^{i})\\
+S & =\frac{1-x^{t}}{1-x}
+\end{align*}
+%
+\end{minipage}
+
+The key quantity here is $\gamma^{2}:=(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}$
+and its relation to $1$. $(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}=1$
+entails $\lambda_{k}=0$ or $\lambda_{k}=\frac{2\sigma_{R}}{\alpha\sigma}$Thus,
+along an eigen direction, the variance reads, 
+
+\[
+\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}]=\frac{\alpha^{2}}{N}\begin{cases}
+\frac{1-(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2t}}{1-(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}}, & \text{otherwise}\\[6pt]
+t, & \lambda_{k}\in\{0,\frac{2\sigma_{R}}{\alpha\sigma}\}
+\end{cases}
+\]
+
+\[
+\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}]=\frac{\alpha^{2}}{N}\begin{cases}
+\frac{1-\gamma^{2t}}{1-\gamma^{2}}, & \text{otherwise}\\[6pt]
+t, & \gamma^{2}=0,\text{i.e. }\lambda_{k}\in\{0,\frac{2\sigma_{R}}{\alpha\sigma}\}
+\end{cases}
+\]
+
+\begin{itemize}
+\item In the extreme case, $\lambda_{k}=0$, then $\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}]=\frac{\alpha^{2}}{N}t$,
+recovering the linear scaling of random walk. Similarly for $\lambda_{k}=\frac{2\sigma_{R}}{\alpha\sigma}$,
+it increase linearly. 
+\item $\lambda_{k}<0$ i.e. concave directions, $(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}>1$,
+then this series will diverge towards infinity. $\lim_{t\to\infty}\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}]=\infty$
+\item For $\lambda_{k}\geq\frac{2\sigma_{R}}{\alpha\sigma}$, convex direction
+with too high curvature, then $|1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k}|\geq1$,
+then this series will diverge $\lim_{t\to\infty}\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}]=\infty$.
+\item For $0<\lambda_{k}<\frac{2\sigma_{R}}{\alpha\sigma}$, then $|1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k}|<1$,
+then this series will converge, this is the desirable case for optimization.
+Asymptotically, 
+\begin{align*}
+\lim_{t\to\infty}\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}] & =\frac{\alpha^{2}}{N}\frac{1}{1-(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}}\\
+ & =\frac{\alpha^{2}}{N}\frac{1}{1-\gamma^{2}}
+\end{align*}
+
+\begin{itemize}
+\item The convergence speed is inversely proportional to $\gamma^{2}:=(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}$.
+When $\gamma^{2}$ close to $0$, the series $\gamma^{2t}$ converges
+faster; when $\gamma^{2}\sim1$, the convergence time gets longer
+and longer. 
+\item Convergence timescale can be computed $1-\gamma^{2\tau}=1/2$, then
+$\log\frac{1}{2}=\tau\log\gamma^{2}$, $\tau=-\frac{\log2}{\log\gamma^{2}}=-\frac{\log2}{\log(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}}$
+is the characteristic time scale. 
+\item The converged level is also controlled by $\gamma^{2}$, specifically
+$\frac{\alpha^{2}}{N}\frac{1}{1-\gamma^{2}}$. When $\gamma^{2}$
+close to $0$, converged level is lower; when $\gamma^{2}\sim1$ the
+converged level grow towards infinity
+\item Thus directions where $\lambda_{k}\sim\frac{\sigma_{R}}{\alpha\sigma}$
+converge the fastest and the variance are the tightest $\lim_{t\to\infty}\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}]\sim\frac{\alpha^{2}}{N}$.
+Showing that these directions are the most well controlled by the
+landscape asymptotically. Specifically when $\lambda_{k}=\frac{\sigma_{R}}{\alpha\sigma}$,
+then this direction converges in one iteration $H\theta_{0}$. 
+\end{itemize}
+\end{itemize}
+In summary, for the simplified process 
+
 
 
 \end{document}
