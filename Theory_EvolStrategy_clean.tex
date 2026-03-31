@@ -173,6 +173,33 @@
   of $Q$.
   \end{proposition}
   
+  \begin{remark}[On-manifold alignment on quadratic landscape]
+    The on-manifold fraction of total expected squared displacement is
+    \[
+        \rho
+        =
+        \frac{(N+1)\,\sigma^2\|\mathbf{v}\|^2
+              + 2\sigma^4\,\hat{\mathbf{v}}^\top Q^2\hat{\mathbf{v}}
+              + \sigma_R^2}
+             {(N+1)\,\sigma^2\|\mathbf{v}\|^2
+              + 2\sigma^4\,\operatorname{Tr}[Q^2]
+              + d\,\sigma_R^2},
+    \]
+    where $\hat{\mathbf{v}} := \mathbf{v}/\|\mathbf{v}\|$.
+    Setting $Q^2 = 0$ and $\sigma_R^2 = \sigma^2\|\mathbf{v}\|^2 + \sigma_\xi^2$
+    recovers the linear-landscape ratio $\rho = (1+(N{+}1)s)/(d+(N{+}1)s)$.
+    The quadratic landscape modifies $\rho$ in two ways:
+    the curvature inflates $\sigma_R^2$, which grows the isotropic term
+    $d\,\sigma_R^2$ in the denominator;
+    and the $2\sigma^4 Q^2$ noise splits between numerator
+    (the projection $\hat{\mathbf{v}}^\top Q^2\hat{\mathbf{v}}$) and
+    denominator (the full trace $\operatorname{Tr}[Q^2]$).
+    When the gradient aligns with the high-curvature eigenvectors,
+    much of the curvature-induced noise is on-manifold and $\rho$ is
+    comparable to the linear case; when the curvature is predominantly
+    orthogonal to $\hat{\mathbf{v}}$, the denominator grows while the
+    numerator does not, suppressing $\rho$.
+    \end{remark}
   
   \begin{proposition}[Dynamics of ES on Quadratic Landscape] \label{prop:quad_landscape_dynamics}
     Consider the simplified evolution
@@ -951,26 +978,23 @@ The total expected squared norm is
   \item A term corresponding to landscape curvature, i.e. higher variance
   along higher curvature directions, $\frac{2\sigma^{4}\alpha^{2}}{N\sigma_{R}^{2}}Q^{2}$
   \end{itemize}
-  
-  \paragraph{Order analysis of quadratic landscape }
-  
-  Note the order of the terms, using 1st term as reference,
-  
-  the 2nd term is of the order $\frac{\sigma^{2}}{\sigma_{R}^{2}}\|\mathbf{v}\|^{2}$
-  on the gradient direction 
-  
-  the 3rd term is of the order $\frac{2\sigma^{4}}{\sigma_{R}^{2}}\mathbf{u}^{\top}Q^{2}\mathbf{u}$
-  along each direction $\mathbf{u}$. 
-  
-  Since in practise, $2\sigma^{2}$ is very small $4.5\times10^{-6}$,
-  generally the quadratic term is small and is small perturbation. Compare
-  the 2nd and 3rd term along a specific direction $\mathbf{u}$, we'd
-  derive the condition when the 3rd quadratic term has comparable effect.
+
+  \paragraph{Order analysis of quadratic landscape}
+
+  Consider the relative magnitudes of the covariance terms, using the first term as a reference:
+  \begin{itemize}
+    \item The second term (aligned with the gradient direction) is of order $\frac{\sigma^{2}}{\sigma_{R}^{2}}\|\mathbf{v}\|^{2}$.
+    \item The third term (along each direction $\mathbf{u}$) is of order $\frac{2\sigma^{4}}{\sigma_{R}^{2}}\,\mathbf{u}^{\top}Q^{2}\mathbf{u}$.
+  \end{itemize}
+
+  Since in practice $2\sigma^{2}$ is very small (e.g., $4.5\times10^{-6}$), the quadratic term generally acts as a small perturbation. To determine when the third (quadratic) term becomes comparable to the second, compare the terms along a specific direction $\mathbf{u}$:
+
   \begin{align*}
-  \frac{2\sigma^{4}}{\sigma_{R}^{2}}\mathbf{u}^{\top}Q^{2}\mathbf{u} & \approx\frac{\sigma^{2}}{\sigma_{R}^{2}}\|\mathbf{v}\|^{2}\\
-  2\sigma^{2}\mathbf{u}^{\top}Q^{2}\mathbf{u} & \approx\theta_{0}^{\top}Q^{2}\theta_{0}\\
-  \mathbf{u}^{\top}Q^{2}\mathbf{u} & \approx\frac{1}{2\sigma^{2}}\theta_{0}^{\top}Q^{2}\theta_{0}
+    \frac{2\sigma^{4}}{\sigma_{R}^{2}}\,\mathbf{u}^{\top}Q^{2}\mathbf{u} &\approx \frac{\sigma^{2}}{\sigma_{R}^{2}}\|\mathbf{v}\|^{2} \\
+    2\sigma^{2}\,\mathbf{u}^{\top}Q^{2}\mathbf{u} &\approx \theta_{0}^{\top}Q^{2}\theta_{0} \\
+    \mathbf{u}^{\top}Q^{2}\mathbf{u} &\approx \frac{1}{2\sigma^{2}}\,\theta_{0}^{\top}Q^{2}\theta_{0}
   \end{align*}
+
   
   Assume $\mathbf{u}$ is an eigenvector of $Q$ with eigenvalue $\lambda_{k}$,
   \begin{align*}
@@ -993,8 +1017,142 @@ The total expected squared norm is
   or lies in the vast valley of degenerate solution, i.e. $Q\theta_{0}=0$,
   $\theta_{0}$ in the null space of $Q$. 
   \end{itemize}
+  \paragraph{Manifold Alignment of Update}
+
+Define the projections onto the gradient direction $\mathbf{v} = Q\theta_0$ and its orthogonal complement:
+\begin{align*}
+P^{\parallel} &:= \frac{\mathbf{v}\mathbf{v}^{\top}}{\|\mathbf{v}\|^{2}}, \qquad
+P^{\perp} := I_{d} - P^{\parallel}.
+\end{align*}
+
+The on-manifold expected squared norm decomposes as
+\begin{align*}
+\mathbb{E}\|P^{\parallel}\Delta\theta\|^{2}
+&= \|\mathbb{E}[P^{\parallel}\Delta\theta]\|^{2}
+   + \mathrm{Tr}[\mathrm{Cov}[P^{\parallel}\Delta\theta]].
+\end{align*}
+
+For the first term, since $\mathbb{E}[\Delta\theta] = \frac{-\alpha\sigma\,\mathbf{v}}{\sigma_{R}}$
+is already along $\mathbf{v}$, we have $P^{\parallel}\mathbb{E}[\Delta\theta] = \mathbb{E}[\Delta\theta]$, so
+\begin{align*}
+\|\mathbb{E}[P^{\parallel}\Delta\theta]\|^{2}
+&= \|\mathbb{E}[\Delta\theta]\|^{2}
+= \frac{\alpha^{2}\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma_{R}^{2}}.
+\end{align*}
+
+For the second term, we project the covariance \eqref{eq:es-quad-cov} onto $P^{\parallel}$:
+\begin{align*}
+\mathrm{Cov}[P^{\parallel}\Delta\theta]
+&= P^{\parallel}\,\mathrm{Cov}[\Delta\theta]\,P^{\parallel} \\
+&= \frac{\alpha^{2}}{N\sigma_{R}^{2}}
+   P^{\parallel}\left(\sigma^{2}\,\mathbf{v}\mathbf{v}^{\top}
+   + 2\sigma^{4}Q^{2}
+   + \sigma_{R}^{2}\,I_{d}\right)P^{\parallel}.
+\end{align*}
+Evaluating each term using $P^{\parallel}\mathbf{v}\mathbf{v}^{\top}P^{\parallel} = \|\mathbf{v}\|^{2}P^{\parallel}$,
+$P^{\parallel}Q^{2}P^{\parallel} = (\hat{\mathbf{v}}^{\top}Q^{2}\hat{\mathbf{v}})\,P^{\parallel}$
+where $\hat{\mathbf{v}} := \mathbf{v}/\|\mathbf{v}\|$,
+and $P^{\parallel}I_{d}\,P^{\parallel} = P^{\parallel}$:
+\begin{align*}
+\mathrm{Cov}[P^{\parallel}\Delta\theta]
+&= \frac{\alpha^{2}}{N\sigma_{R}^{2}}
+   \left(\sigma^{2}\|\mathbf{v}\|^{2}
+         + 2\sigma^{4}\,\hat{\mathbf{v}}^{\top}Q^{2}\hat{\mathbf{v}}
+         + \sigma_{R}^{2}\right)P^{\parallel}.
+\end{align*}
+Taking the trace ($\mathrm{Tr}[P^{\parallel}] = 1$) and combining:
+\begin{align*}
+\mathbb{E}\|P^{\parallel}\Delta\theta\|^{2}
+&= \frac{\alpha^{2}\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma_{R}^{2}}
+   + \frac{\alpha^{2}}{N\sigma_{R}^{2}}
+     \left(\sigma^{2}\|\mathbf{v}\|^{2}
+           + 2\sigma^{4}\,\hat{\mathbf{v}}^{\top}Q^{2}\hat{\mathbf{v}}
+           + \sigma_{R}^{2}\right).
+\end{align*}
+
+The total expected squared norm follows analogously using $\mathrm{Tr}[\mathbf{v}\mathbf{v}^{\top}] = \|\mathbf{v}\|^{2}$,
+$\mathrm{Tr}[Q^{2}] = \mathrm{Tr}[Q^{2}]$, and $\mathrm{Tr}[I_{d}] = d$:
+\begin{align*}
+\mathbb{E}\|\Delta\theta\|^{2}
+&= \frac{\alpha^{2}\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma_{R}^{2}}
+   + \frac{\alpha^{2}}{N\sigma_{R}^{2}}
+     \left(\sigma^{2}\|\mathbf{v}\|^{2}
+           + 2\sigma^{4}\,\mathrm{Tr}[Q^{2}]
+           + d\,\sigma_{R}^{2}\right).
+\end{align*}
+
+Factoring out $\alpha^{2}/(N\sigma_{R}^{2})$ from both expressions --- noting that the
+mean-squared term $\frac{\alpha^{2}\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma_{R}^{2}}$
+contributes $N\,\sigma^{2}\|\mathbf{v}\|^{2}$ after extracting the common factor,
+which combines with the variance contribution to yield $(N+1)\,\sigma^{2}\|\mathbf{v}\|^{2}$
+--- the on-manifold fraction is
+\begin{align*}
+\rho
+:= \frac{\mathbb{E}\|P^{\parallel}\Delta\theta\|^{2}}
+        {\mathbb{E}\|\Delta\theta\|^{2}}
+= \frac{(N+1)\,\sigma^{2}\|\mathbf{v}\|^{2}
+        + 2\sigma^{4}\,\hat{\mathbf{v}}^{\top}Q^{2}\hat{\mathbf{v}}
+        + \sigma_{R}^{2}}
+       {(N+1)\,\sigma^{2}\|\mathbf{v}\|^{2}
+        + 2\sigma^{4}\,\mathrm{Tr}[Q^{2}]
+        + d\,\sigma_{R}^{2}}.
+\end{align*}
+
+Setting $Q^{2}=0$ and $\sigma_{R}^{2}=\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}$
+recovers the linear-landscape ratio $\rho = (1+(N+1)s)/(d+(N+1)s)$
+with $s = \sigma^{2}\|\mathbf{v}\|^{2}/\sigma_{R}^{2}$.
+  % \paragraph{Manifold Alignment of Update}
+
+  % From equations above, the on-manifold expected squared norm is
+  % \begin{align*}
+  % \mathbb{E}\|P^{\parallel}\Delta\theta\|^{2}
+  % &= \|\mathbb{E}[P^{\parallel}\Delta\theta]\|^{2}
+  %    + \mathrm{Tr}[\mathrm{Cov}[P^{\parallel}\Delta\theta]] \\
+  % &= \frac{\alpha^{2}\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma_{R}^{2}}
+  %    + \frac{\alpha^{2}}{N\sigma_{R}^{2}}
+  %      \left(\sigma^{2}\|\mathbf{v}\|^{2}
+  %            + 2\sigma^{4}\,\hat{\mathbf{v}}^{\top}Q^{2}\hat{\mathbf{v}}
+  %            + \sigma_{R}^{2}\right)
+  % \end{align*}
+  % where $\hat{\mathbf{v}} := \mathbf{v}/\|\mathbf{v}\|$, using
+  % $\mathrm{Tr}[\mathbf{v}\mathbf{v}^{\top}P^{\parallel}] = \|\mathbf{v}\|^{2}$,
+  % $\mathrm{Tr}[Q^{2}P^{\parallel}] = \hat{\mathbf{v}}^{\top}Q^{2}\hat{\mathbf{v}}$,
+  % and $\mathrm{Tr}[P^{\parallel}] = 1$.
   
-  \subsection{Multi-step analysis for quadratic landscape}\label{appsec:quad_landscape_dynamics}
+  % Similarly, the total expected squared norm is
+  % \begin{align*}
+  % \mathbb{E}\|\Delta\theta\|^{2}
+  % &= \frac{\alpha^{2}\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma_{R}^{2}}
+  %    + \frac{\alpha^{2}}{N\sigma_{R}^{2}}
+  %      \left(\sigma^{2}\|\mathbf{v}\|^{2}
+  %            + 2\sigma^{4}\,\mathrm{Tr}[Q^{2}]
+  %            + d\,\sigma_{R}^{2}\right)
+  % \end{align*}
+  % using $\mathrm{Tr}[\mathbf{v}\mathbf{v}^{\top}] = \|\mathbf{v}\|^{2}$ and $\mathrm{Tr}[I_{d}] = d$.
+  
+  % Factoring out $\alpha^{2}/(N\sigma_{R}^{2})$ from both expressions, the on-manifold fraction is
+  % \begin{align*}
+  % \rho
+  % := \frac{\mathbb{E}\|P^{\parallel}\Delta\theta\|^{2}}
+  %         {\mathbb{E}\|\Delta\theta\|^{2}}
+  % = \frac{(N+1)\,\sigma^{2}\|\mathbf{v}\|^{2}
+  %         + 2\sigma^{4}\,\hat{\mathbf{v}}^{\top}Q^{2}\hat{\mathbf{v}}
+  %         + \sigma_{R}^{2}}
+  %        {(N+1)\,\sigma^{2}\|\mathbf{v}\|^{2}
+  %         + 2\sigma^{4}\,\mathrm{Tr}[Q^{2}]
+  %         + d\,\sigma_{R}^{2}}
+  % \end{align*}
+  % where the mean-squared term $\frac{\alpha^{2}\sigma^{2}\|\mathbf{v}\|^{2}}{\sigma_{R}^{2}}$
+  % contributes $N\,\sigma^{2}\|\mathbf{v}\|^{2}$ to both numerator and denominator after
+  % the common factor is extracted, combining with the variance contribution
+  % $\sigma^{2}\|\mathbf{v}\|^{2}$ to give the $(N+1)\,\sigma^{2}\|\mathbf{v}\|^{2}$ term.
+  
+  % Setting $Q^{2}=0$ and $\sigma_{R}^{2}=\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}$
+  % recovers the linear-landscape ratio $\rho = (1+(N+1)s)/(d+(N+1)s)$
+  % with $s = \sigma^{2}\|\mathbf{v}\|^{2}/\sigma_{R}^{2}$.
+
+\clearpage
+  \subsection{Multi-step ES analysis for quadratic landscape}\label{appsec:quad_landscape_dynamics}
   
   In a sense we could write down the iteration as 
   \begin{align*}
@@ -1108,20 +1266,19 @@ The total expected squared norm is
   t, & x=1.
   \end{cases}
   \]
-  
   note that for finite terms this identity holds for $|x|>1$. 
   
-  \noindent\begin{minipage}[t]{1\columnwidth}%
-  Short derivation
+  % \noindent\begin{minipage}[t]{1\columnwidth}%
+  % Short derivation
   
-  \begin{align*}
-  1+x+x^{2}+...x^{t-1} & =S\\
-  S+x^{t}(\sum_{i=0}^{\infty}x^{i}) & =(\sum_{i=0}^{\infty}x^{i})\\
-  S & =(1-x^{t})(\sum_{i=0}^{\infty}x^{i})\\
-  S & =\frac{1-x^{t}}{1-x}
-  \end{align*}
-  %
-  \end{minipage}
+  % \begin{align*}
+  % 1+x+x^{2}+...x^{t-1} & =S\\
+  % S+x^{t}(\sum_{i=0}^{\infty}x^{i}) & =(\sum_{i=0}^{\infty}x^{i})\\
+  % S & =(1-x^{t})(\sum_{i=0}^{\infty}x^{i})\\
+  % S & =\frac{1-x^{t}}{1-x}
+  % \end{align*}
+  % %
+  % \end{minipage}
   
   The key quantity here is $\gamma^{2}:=(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}$
   and its relation to $1$. $(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}=1$
@@ -1143,10 +1300,10 @@ The total expected squared norm is
   \]
   
   \begin{itemize}
-  \item In the extreme case, $\lambda_{k}=0$, then $\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}]=\frac{\alpha^{2}}{N}t$,
+  \item In the flat direction, $\lambda_{k}=0$, then $\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}]=\frac{\alpha^{2}}{N}t$,
   recovering the linear scaling of random walk. Similarly for $\lambda_{k}=\frac{2\sigma_{R}}{\alpha\sigma}$,
   it increase linearly. 
-  \item $\lambda_{k}<0$ i.e. concave directions, $(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}>1$,
+  \item In the concave directions, i.e.$\lambda_{k}<0$, $(1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k})^{2}>1$,
   then this series will diverge towards infinity. $\lim_{t\to\infty}\mathrm{Cov}[\mathbf{u}_{k}^{\top}\theta_{t}]=\infty$
   \item For $\lambda_{k}\geq\frac{2\sigma_{R}}{\alpha\sigma}$, convex direction
   with too high curvature, then $|1-\frac{\alpha\sigma}{\sigma_{R}}\lambda_{k}|\geq1$,
@@ -1178,6 +1335,312 @@ The total expected squared norm is
   then this direction converges in one iteration $H\theta_{0}$. 
   \end{itemize}
   \end{itemize}
+
+  \subsection{Gradient ascent on quadratic landscape}\label{appsec:gd_quad_landscape}
+
+  For comparison with the ES dynamics of Section~\ref{appsec:quad_landscape_dynamics},
+  we analyze standard (noiseless) gradient ascent\footnote{Since we are maximizing the reward, it's gradient ascent, but still we call it GD for simplicity}
+  on the same quadratic landscape $R(\theta) = -\frac{1}{2}\theta^\top Q\theta$. % with $Q \succeq 0$.
+  
+  The negative gradient at $\theta_t$ is $-\nabla R(\theta_t) = Q\theta_t = \mathbf{v}_t$.
+  Gradient ascent with learning rate $\beta$ updates as
+  \begin{equation}
+  \theta_{t+1} = \theta_t + \beta\nabla R(\theta_t) = \theta_t - \beta\,Q\theta_t = (I - \beta Q)\,\theta_t.
+  \end{equation}
+  
+  Define $H_{\mathrm{GD}} := I - \beta Q$, with eigendecomposition
+  \begin{equation}
+  H_{\mathrm{GD}} = \sum_{k=1}^{d}(1 - \beta\lambda_k)\,\mathbf{u}_k\mathbf{u}_k^\top,
+  \end{equation}
+  where $\lambda_k$ and $\mathbf{u}_k$ are the eigenvalues and eigenvectors of $Q$.
+  Let $\gamma_k^{\mathrm{GD}} := 1 - \beta\lambda_k$ denote the contraction factor along
+  eigendirection $\mathbf{u}_k$.
+  
+  \paragraph{Trajectory}
+  
+  Since the iteration is deterministic, recursion gives
+  \begin{equation}
+  \theta_t = H_{\mathrm{GD}}^t\,\theta_0
+  = \sum_{k=1}^{d}(\gamma_k^{\mathrm{GD}})^t\,(\mathbf{u}_k^\top\theta_0)\,\mathbf{u}_k.
+  \end{equation}
+  
+  Each eigendirection evolves independently:
+  \begin{equation}
+  \mathbf{u}_k^\top\theta_t = (1 - \beta\lambda_k)^t\,\mathbf{u}_k^\top\theta_0.
+  \end{equation}
+  
+  The squared distance to the optimum $\theta^* = 0$ is
+  \begin{equation}
+  \|\theta_t\|^2 = \sum_{k=1}^{d}(1-\beta\lambda_k)^{2t}\,(\mathbf{u}_k^\top\theta_0)^2.
+  \end{equation}
+  
+  \paragraph{Convergence conditions}
+  
+  Direction $\mathbf{u}_k$ converges if and only if $|\gamma_k^{\mathrm{GD}}| < 1$, i.e.,
+  \begin{equation}
+  0 < \lambda_k < \frac{2}{\beta}.
+  \end{equation}
+  The three non-convergent modes mirror those of the ES dynamics:
+  \begin{itemize}
+  \item \textbf{Flat directions} ($\lambda_k = 0$): $\gamma_k^{\mathrm{GD}} = 1$,
+    so $\mathbf{u}_k^\top\theta_t = \mathbf{u}_k^\top\theta_0$ for all $t$, 
+    i.e. along flat directions, the gradient ascent freezes at the initial projection.
+  \subitem This is dramatically different from ES, where along flat directions, 
+    the iterate undergoes unbounded diffusion with variance growing as $\frac{\alpha^2 t}{N}$.
+  \item \textbf{Concave directions} ($\lambda_k < 0$): $\gamma_k^{\mathrm{GD}} > 1$,
+    causing exponential divergence $|\mathbf{u}_k^\top\theta_t| \to \infty$.
+  \item \textbf{Overly sharp convex directions} ($\lambda_k \geq 2/\beta$):
+    $|\gamma_k^{\mathrm{GD}}| \geq 1$, and the iterate overshoots, oscillating
+    with growing (or non-decaying) amplitude. 
+    This explosion can happen due to too large learning rate, or due to too high landscape curvature.
+  \end{itemize}
+  
+  \paragraph{Convergence rate}
+  
+  Within the stable regime $0 < \lambda_k < 2/\beta$, the convergence timescale along
+  $\mathbf{u}_k$ is
+  \begin{equation}
+  \tau_k^{\mathrm{GD}} = \frac{-\log 2}{\log(\gamma_k^{\mathrm{GD}})^2}
+  = \frac{-\log 2}{2\log|1 - \beta\lambda_k|}.
+  \end{equation}
+  
+  The optimal eigenvalue is $\lambda_k = 1/\beta$, which achieves
+  $\gamma_k^{\mathrm{GD}} = 0$ and convergence in a single iteration
+  ($\tau_k^{\mathrm{GD}} = 0$, since $\mathbf{u}_k^\top\theta_1 = 0$ exactly).
+  The overall convergence rate is governed by the slowest direction,
+  \begin{equation}
+  \tau_{\max}^{\mathrm{GD}} = \max_{k:\,\lambda_k>0}\;\frac{-\log 2}{2\log|1 - \beta\lambda_k|},
+  \end{equation}
+  which for small learning rate $\beta\lambda_k \ll 1$ gives
+  $\tau_k^{\mathrm{GD}} \approx \frac{1}{2\beta\lambda_k}$, inversely proportional
+  to the curvature. The condition number $\kappa := \lambda_{\max}/\lambda_{\min}$
+  (over positive eigenvalues) then controls the ratio of fastest to slowest timescales.
+  
+  \paragraph{Comparison with ES dynamics}
+  
+  The simplified ES iteration (Proposition~\ref{prop:quad_landscape_dynamics}) takes the form
+  \begin{equation}
+  \theta_{t+1} = H_{\mathrm{ES}}\,\theta_t + \eta_t, \qquad
+  H_{\mathrm{ES}} = I - \frac{\alpha\sigma}{\sigma_R}Q,
+  \end{equation}
+  with $\gamma_k^{\mathrm{ES}} = 1 - \frac{\alpha\sigma}{\sigma_R}\lambda_k$.
+  The two iterations are structurally identical, with the correspondence
+  $\beta \leftrightarrow \frac{\alpha\sigma}{\sigma_R}$, up to the additive
+  noise $\eta_t$ in the ES case. This yields three key differences:
+  
+  \begin{enumerate}
+  \item \textbf{Effective learning rate.}
+    The ES effective learning rate $\frac{\alpha\sigma}{\sigma_R}$ is
+    self-normalized by the reward standard deviation $\sigma_R$, which
+    depends on the current iterate through $\|\mathbf{v}\|^2 = \|Q\theta_t\|^2$
+    (in the non-simplified version).
+    In contrast, the GD learning rate $\beta$ is a fixed hyperparameter.
+    This self-normalization provides ES with a degree of automatic step-size
+    adaptation absent in vanilla GD.
+  
+  \item \textbf{Stability threshold.}
+    GD diverges when $\lambda_k > 2/\beta$; ES diverges when
+    $\lambda_k > 2\sigma_R/(\alpha\sigma)$.
+    The ES threshold is typically more permissive since $\sigma_R \geq \sigma_\xi$
+    inflates the denominator, though this comes at the cost of a smaller
+    effective step size.
+  
+  \item \textbf{Asymptotic behavior.}
+    GD converges to $\theta^* = 0$ exactly along stable directions, with
+    zero residual error. ES converges only in distribution, with asymptotic
+    variance $\frac{\alpha^2}{N(1-(\gamma_k^{\mathrm{ES}})^2)}$ per direction ---
+    a noise floor set by the exploration--exploitation tradeoff that cannot
+    be eliminated without increasing $N$.
+    On flat directions ($\lambda_k = 0$), GD stays frozen at the initial value,
+    while ES undergoes unbounded diffusion with variance growing as
+    $\frac{\alpha^2 t}{N}$.
+  \end{enumerate}
+  
+  These comparisons are summarized by:
+  \[
+  \renewcommand{\arraystretch}{1.4}
+  \begin{array}{lcc}
+  \hline
+   & \textbf{Gradient Descent} & \textbf{Evolution Strategy} \\ \hline
+  \text{Eff.\ learning rate} & \beta & \alpha\sigma/\sigma_R \\
+  \text{Contraction factor } \gamma_k & 1 - \beta\lambda_k & 1 - \frac{\alpha\sigma}{\sigma_R}\lambda_k \\
+  \text{Stability bound} & \lambda_k < 2/\beta & \lambda_k < 2\sigma_R/(\alpha\sigma) \\
+  \text{Optimal curvature} & \lambda_k = 1/\beta & \lambda_k = \sigma_R/(\alpha\sigma) \\
+  \text{Residual error (stable)} & 0 & \frac{\alpha^2}{N(1-\gamma_k^2)} \\
+  \text{Flat direction ($\lambda_k=0$)} & \text{frozen} & \text{diffusion } \sim \frac{\alpha^2 t}{N} \\
+  \hline
+  \end{array}
+  \]
+
+  \subsection{Solution geometry: GD vs.\ ES on quadratic landscape}\label{appsec:solution_geometry}
+
+  We formalize the geometric claims of the main text by comparing the GD and ES
+  solutions after $T$ steps on the same quadratic landscape
+  $R(\theta) = -\frac{1}{2}\theta^\top Q\theta$, starting from the same initialization $\theta_0$.
+  Let $Q = \sum_k \lambda_k \mathbf{u}_k\mathbf{u}_k^\top$ with $\lambda_k \geq 0$.
+  
+  \paragraph{GD solution}
+  
+  From Section~\ref{appsec:gd_quad_landscape}, the GD iterate is deterministic:
+  \[
+  \theta_{\mathrm{GD}} := \theta_T^{\mathrm{GD}}
+  = \sum_{k=1}^{d}(1-\beta\lambda_k)^T\,(\mathbf{u}_k^\top\theta_0)\,\mathbf{u}_k.
+  \]
+  
+  The displacement from initialization is
+  \[
+  \theta_{\mathrm{GD}} - \theta_0
+  = \sum_{k=1}^{d}\bigl[(1-\beta\lambda_k)^T - 1\bigr](\mathbf{u}_k^\top\theta_0)\,\mathbf{u}_k.
+  \]
+  
+  Crucially, directions with $\lambda_k = 0$ contribute nothing:
+  $(1 - \beta\cdot 0)^T - 1 = 0$. Thus $\theta_{\mathrm{GD}} - \theta_0$ lies
+  entirely within the column space of $Q$ (the ``task-relevant'' subspace). If $Q$ has
+  rank $r \ll d$, the GD displacement is confined to an $r$-dimensional subspace,
+  regardless of the number of steps $T$.
+  
+  The squared displacement along each active direction is
+  \[
+  |\mathbf{u}_k^\top(\theta_{\mathrm{GD}} - \theta_0)|^2
+  = \bigl[1 - (1-\beta\lambda_k)^T\bigr]^2\,(\mathbf{u}_k^\top\theta_0)^2,
+  \]
+  and for converged directions ($|\gamma_k^{\mathrm{GD}}| \ll 1$, large $T$) this
+  saturates to $(\mathbf{u}_k^\top\theta_0)^2$, i.e., the iterate reaches the
+  optimum $\mathbf{u}_k^\top\theta^* = 0$.
+  
+  \paragraph{ES solution}
+  
+  From Section~\ref{appsec:quad_landscape_dynamics}, the simplified ES iterate is
+  \[
+  \theta_{\mathrm{ES}} := \theta_T^{\mathrm{ES}}
+  = H_{\mathrm{ES}}^T\,\theta_0 + \sum_{t=1}^{T}H_{\mathrm{ES}}^{t-1}\,\eta_{T-t},
+  \]
+  with $H_{\mathrm{ES}} = I - \frac{\alpha\sigma}{\sigma_R}Q$ and
+  $\eta_t \sim \mathcal{N}(0, \frac{\alpha^2}{N}I_d)$.
+  
+  The displacement decomposes as
+  \[
+  \theta_{\mathrm{ES}} - \theta_0
+  = \underbrace{(H_{\mathrm{ES}}^T - I)\theta_0}_{\text{signal (deterministic)}}
+  + \underbrace{\sum_{t=1}^{T}H_{\mathrm{ES}}^{t-1}\,\eta_{T-t}}_{\text{noise (stochastic)}}.
+  \]
+  
+  The signal term has exactly the same structure as the GD displacement, with
+  $\beta \leftrightarrow \alpha\sigma/\sigma_R$: it lies within the column space of $Q$
+  and vanishes on flat directions. The noise term, however, is isotropic in origin ---
+  each $\eta_t$ is drawn from $\mathcal{N}(0, \frac{\alpha^2}{N}I_d)$ --- and thus
+  has support in all $d$ dimensions.
+  
+  Along each eigendirection, the mean and variance of the ES displacement are:
+  \begin{align*}
+  \mathbb{E}[\mathbf{u}_k^\top(\theta_{\mathrm{ES}} - \theta_0)]
+  &= \bigl[(\gamma_k^{\mathrm{ES}})^T - 1\bigr]\,\mathbf{u}_k^\top\theta_0, \\
+  \mathrm{Var}[\mathbf{u}_k^\top(\theta_{\mathrm{ES}} - \theta_0)]
+  &= \frac{\alpha^2}{N}\cdot
+  \begin{cases}
+  \dfrac{1 - (\gamma_k^{\mathrm{ES}})^{2T}}{1 - (\gamma_k^{\mathrm{ES}})^2}, & (\gamma_k^{\mathrm{ES}})^2 \neq 1, \\[6pt]
+  T, & (\gamma_k^{\mathrm{ES}})^2 = 1.
+  \end{cases}
+  \end{align*}
+  
+  For flat directions ($\lambda_k = 0$, $\gamma_k^{\mathrm{ES}} = 1$), the mean displacement
+  is zero but the variance grows as $\frac{\alpha^2 T}{N}$ --- a random walk.
+  For active directions ($\lambda_k > 0$, $|\gamma_k^{\mathrm{ES}}| < 1$), the mean displacement
+  converges to $-\mathbf{u}_k^\top\theta_0$ (same target as GD) while the variance
+  saturates to $\frac{\alpha^2}{N(1 - (\gamma_k^{\mathrm{ES}})^2)}$.
+  
+  \paragraph{Decomposition of squared displacements}
+  
+  The total expected squared displacement of ES from initialization decomposes as
+  \begin{align*}
+  \mathbb{E}\|\theta_{\mathrm{ES}} - \theta_0\|^2
+  &= \sum_{k:\,\lambda_k > 0}
+     \Bigl(\bigl[1 - (\gamma_k^{\mathrm{ES}})^T\bigr]^2(\mathbf{u}_k^\top\theta_0)^2
+           + \frac{\alpha^2}{N}\cdot\frac{1 - (\gamma_k^{\mathrm{ES}})^{2T}}{1 - (\gamma_k^{\mathrm{ES}})^2}\Bigr) \\
+  &\quad+ \sum_{k:\,\lambda_k = 0}
+     \frac{\alpha^2 T}{N}.
+  \end{align*}
+  
+  The first sum runs over the $r$ active directions and contains both signal and noise;
+  the second sum runs over the $d - r$ flat directions and is pure noise. For
+  $r \ll d$ (low-rank task structure), the flat-direction contribution dominates:
+  \[
+  \mathbb{E}\|\theta_{\mathrm{ES}} - \theta_0\|^2
+  \approx \underbrace{\|\theta_{\mathrm{GD}} - \theta_0\|^2}_{\mathcal{O}(r)}
+  + \underbrace{\frac{\alpha^2 T d}{N}}_{\text{off-manifold diffusion, }\mathcal{O}(d)}.
+  \]
+  
+  By contrast, GD has $\|\theta_{\mathrm{GD}} - \theta_0\|^2 = \mathcal{O}(r)$ with
+  no off-manifold contribution.
+  
+  \paragraph{Geometry of $\theta_{\mathrm{ES}} - \theta_{\mathrm{GD}}$}
+  
+  The difference between the two solutions is
+  \[
+  \theta_{\mathrm{ES}} - \theta_{\mathrm{GD}}
+  = \underbrace{(H_{\mathrm{ES}}^T - H_{\mathrm{GD}}^T)\theta_0}_{\text{signal mismatch}}
+  + \underbrace{\sum_{t=1}^{T}H_{\mathrm{ES}}^{t-1}\,\eta_{T-t}}_{\text{ES noise}}.
+  \]
+  
+  The signal mismatch term lies within the column space of $Q$ and reflects the
+  difference in effective learning rates ($\alpha\sigma/\sigma_R$ vs.\ $\beta$).
+  For converged directions where both methods have reached the optimum, this
+  term vanishes: $(\gamma_k^{\mathrm{ES}})^T \approx (\gamma_k^{\mathrm{GD}})^T \approx 0$.
+  The noise term is identical to the ES noise analyzed above.
+  
+  Thus, in the large-$T$ regime where both methods have converged on the active directions:
+  \begin{align*}
+  \mathbb{E}\|\theta_{\mathrm{ES}} - \theta_{\mathrm{GD}}\|^2
+  &\approx \sum_{k:\,\lambda_k > 0}
+     \frac{\alpha^2}{N(1 - (\gamma_k^{\mathrm{ES}})^2)}
+     + \sum_{k:\,\lambda_k = 0}\frac{\alpha^2 T}{N} \\
+  &\approx \frac{\alpha^2 T(d-r)}{N} + \mathcal{O}(r),
+  \end{align*}
+  which is dominated by the off-manifold random walk for $r \ll d$.
+  
+  \paragraph{Summary of geometric structure}
+  
+  The three pairwise distances satisfy the approximate hierarchy (for $r \ll d$, large $T$):
+  \begin{align*}
+  \|\theta_{\mathrm{GD}} - \theta_0\|^2 &= \mathcal{O}(r), \\
+  \mathbb{E}\|\theta_{\mathrm{ES}} - \theta_0\|^2 &= \mathcal{O}(r) + \mathcal{O}(d), \\
+  \mathbb{E}\|\theta_{\mathrm{ES}} - \theta_{\mathrm{GD}}\|^2 &= \mathcal{O}(d).
+  \end{align*}
+  
+  The first displacement is low-dimensional and lies within the column space of $Q$.
+  The second is the sum of a comparable on-manifold component and a much larger
+  isotropic off-manifold diffusion. The third is dominated by the off-manifold
+  component alone, since both methods converge to the same optimum within the
+  active subspace. This triangle of displacements accounts for the empirical
+  observation that $\theta_{\mathrm{ES}}$ achieves similar task performance to
+  $\theta_{\mathrm{GD}}$ (shared on-manifold component) while being far from it
+  in parameter space (off-manifold diffusion).
+  
+  \begin{remark}[Cosine similarity]
+  The cosine similarity between the two displacement vectors is
+  \[
+  \cos\angle(\theta_{\mathrm{ES}} - \theta_0,\;\theta_{\mathrm{GD}} - \theta_0)
+  = \frac{(\theta_{\mathrm{ES}} - \theta_0)^\top(\theta_{\mathrm{GD}} - \theta_0)}
+         {\|\theta_{\mathrm{ES}} - \theta_0\|\,\|\theta_{\mathrm{GD}} - \theta_0\|}.
+  \]
+  Since $\theta_{\mathrm{GD}} - \theta_0$ lies within the column space of $Q$
+  and the ES noise is zero-mean, the expected inner product picks up only the
+  on-manifold signal of ES:
+  \[
+  \mathbb{E}[(\theta_{\mathrm{ES}} - \theta_0)^\top(\theta_{\mathrm{GD}} - \theta_0)]
+  = (\theta_{\mathrm{GD}}' - \theta_0)^\top(\theta_{\mathrm{GD}} - \theta_0),
+  \]
+  where $\theta_{\mathrm{GD}}'$ denotes GD with learning rate $\alpha\sigma/\sigma_R$
+  instead of $\beta$. For large $T$ with both converged on active directions, this
+  approaches $\|\theta_{\mathrm{GD}} - \theta_0\|^2 = \mathcal{O}(r)$. Meanwhile,
+  $\|\theta_{\mathrm{ES}} - \theta_0\| = \mathcal{O}(\sqrt{d})$, so
+  \[
+  \mathbb{E}\left[\cos\angle(\theta_{\mathrm{ES}} - \theta_0,\;\theta_{\mathrm{GD}} - \theta_0)\right]
+  \sim \mathcal{O}\!\left(\sqrt{r/d}\right),
+  \]
+  which is small for $r \ll d$: the two displacement vectors are nearly orthogonal
+  despite leading to similar task performance.
+  \end{remark}
 
 
 
