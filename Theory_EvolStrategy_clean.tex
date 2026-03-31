@@ -15,6 +15,7 @@
 
 \newtheorem{proposition}{Proposition}
 \newtheorem{remark}{Remark}
+\newtheorem{proof}{Proof}
 \begin{document}
 
 
@@ -74,38 +75,76 @@
   and shrinks inversely in the batch size $N$.
   \end{proposition}
   
-  
   \begin{proposition}[Evolution Strategy on a Linear Landscape] \label{prop:linear_landscape_step}
-  Let $R(\theta) = -\mathbf{v}^\top\theta$ with observation noise
-  $\sigma_\xi$. Define the signal-to-noise ratio
-  $s := \frac{\sigma^2\|\mathbf{v}\|^2}{\sigma^2\|\mathbf{v}\|^2 + \sigma_\xi^2} \in [0,1]$.
-  The on- and off-manifold components of the update decouple:
-  \[
-      \mathbb{E}[P^{\parallel}\Delta\theta]
-      = \frac{-\sigma\alpha\,\mathbf{v}}{\sqrt{\sigma^2\|\mathbf{v}\|^2+\sigma_\xi^2}},
-      \qquad
-      \mathbb{E}[P^{\perp}\Delta\theta] = 0,
-  \]
-  so the \emph{mean} update is purely aligned with the gradient direction
-  $\mathbf{v}$. The on-manifold fraction of total squared displacement is
-  \[
-      \rho :=
-      \frac{\mathbb{E}\|P^{\parallel}\Delta\theta\|^2}
-           {\mathbb{E}\|\Delta\theta\|^2}
-      =
-      \frac{1 + (N+1)\,s}
-           {d + (N+1)\,s}.
-  \]
-  Hence: (i) without signal ($s=0$), $\rho = 1/d$, i.e.\ the update is
-  purely diffusive; (ii) in the high-SNR limit ($s\to 1$), $\rho \to
-  (N+2)/(d+N+1)$; (iii) $\rho$ increases monotonically in $s$ and $N$,
-  and decreases in $d$. Since $N \ll d$ in practice, on-manifold movement
-  per step is negligible relative to off-manifold diffusion.
-  \end{proposition}
+    Let $R(\theta) = -\mathbf{v}^\top\theta$ with observation noise
+    $\sigma_\xi$. Define $\sigma_R^2 := \sigma^2\|\mathbf{v}\|^2 + \sigma_\xi^2$.
+    The mean and covariance of the ES parameter update are 
+    \begin{align}
+        \mathbb{E}[\Delta\theta]
+        &= \frac{-\alpha\sigma\,\mathbf{v}}{\sigma_R} \label{eq:es_linear_mean} \\
+        \operatorname{Cov}[\Delta\theta]
+        &= \frac{\alpha^2}{N}\,I_d
+          + \frac{\alpha^2\sigma^2}{N\sigma_R^2}\,\mathbf{v}\mathbf{v}^\top \label{eq:es_linear_cov}
+    \end{align}
+    The mean update is purely aligned with the gradient direction $\mathbf{v}$,
+    and the covariance consists of the same isotropic baseline as the flat landscape
+    plus a rank-1 boost along $\mathbf{v}$.
+    Relative to the quadratic case (Proposition~\ref{prop:quad_landscape_step}),
+    the linear landscape produces identical expressions with $Q^2 = 0$:
+    the curvature-dependent inflation of $\sigma_R^2$ and the anisotropic
+    noise term $2\sigma^4 Q^2$ are both absent.
+    \end{proposition}
+    
+    \begin{remark}[On-manifold alignment of ES update]
+    Define the signal fraction
+    $s := \sigma^2\|\mathbf{v}\|^2/\sigma_R^2 \in [0,1]$.
+    The on-manifold fraction of total squared displacement is
+    \[
+        \rho :=
+        \frac{\mathbb{E}\|P^{\parallel}\Delta\theta\|^2}
+             {\mathbb{E}\|\Delta\theta\|^2}
+        =
+        \frac{1 + (N+1)\,s}
+             {d + (N+1)\,s}.
+    \]
+    Hence: (i) without signal ($s=0$), $\rho = 1/d$, i.e.\ the update is
+    purely diffusive; (ii) in the high-SNR limit ($s\to 1$), $\rho \to
+    (N+2)/(d+N+1)$; (iii) $\rho$ increases monotonically in $s$ and $N$,
+    and decreases in $d$. Since $N \ll d$ in practice, on-manifold movement
+    per step is negligible relative to off-manifold diffusion.
+    \end{remark}
+
+  % \begin{proposition}[Evolution Strategy on a Linear Landscape] \label{prop:linear_landscape_step}
+  % Let $R(\theta) = -\mathbf{v}^\top\theta$ with observation noise
+  % $\sigma_\xi$. Define the signal-to-noise ratio
+  % $s := \frac{\sigma^2\|\mathbf{v}\|^2}{\sigma^2\|\mathbf{v}\|^2 + \sigma_\xi^2} \in [0,1]$.
+  % The on- and off-manifold components of the update decouple:
+  % \[
+  %     \mathbb{E}[P^{\parallel}\Delta\theta]
+  %     = \frac{-\sigma\alpha\,\mathbf{v}}{\sqrt{\sigma^2\|\mathbf{v}\|^2+\sigma_\xi^2}},
+  %     \qquad
+  %     \mathbb{E}[P^{\perp}\Delta\theta] = 0,
+  % \]
+  % so the \emph{mean} update is purely aligned with the gradient direction
+  % $\mathbf{v}$. The on-manifold fraction of total squared displacement is
+  % \[
+  %     \rho :=
+  %     \frac{\mathbb{E}\|P^{\parallel}\Delta\theta\|^2}
+  %          {\mathbb{E}\|\Delta\theta\|^2}
+  %     =
+  %     \frac{1 + (N+1)\,s}
+  %          {d + (N+1)\,s}.
+  % \]
+  % Hence: (i) without signal ($s=0$), $\rho = 1/d$, i.e.\ the update is
+  % purely diffusive; (ii) in the high-SNR limit ($s\to 1$), $\rho \to
+  % (N+2)/(d+N+1)$; (iii) $\rho$ increases monotonically in $s$ and $N$,
+  % and decreases in $d$. Since $N \ll d$ in practice, on-manifold movement
+  % per step is negligible relative to off-manifold diffusion.
+  % \end{proposition}
   
   
   \begin{proposition}[Evolution Strategy on a Quadratic Landscape] \label{prop:quad_landscape_step}
-  Let $R(\theta) = -\frac{1}{2}\theta^\top Q\theta$ with $Q \succeq 0$,
+  Let $R(\theta) = -\frac{1}{2}\theta^\top Q\theta$,  %with $Q \succeq 0$,
   current iterate $\theta_0$, and $\mathbf{v} := Q\theta_0$
   (the negative gradient). Define
   \[
@@ -114,25 +153,23 @@
                   + \sigma_\xi^2.
   \]
   The mean and covariance of the ES parameter update are
-  \[
+  \begin{align}
       \mathbb{E}[\Delta\theta]
-      = \frac{-\alpha\sigma\,\mathbf{v}}{\sigma_R},
-  \]
-  \[
+      &= \frac{-\alpha\sigma\,\mathbf{v}}{\sigma_R}, \label{eq:es-quad-mean} \\
       \operatorname{Cov}[\Delta\theta]
-      = \frac{\alpha^2}{N\sigma_R^2}
-        \Bigl(
+      &= \frac{\alpha^2}{N\sigma_R^2}
+        \left(
           \sigma^2\,\mathbf{v}\mathbf{v}^\top
           + 2\sigma^4 Q^2
           + \sigma_R^2\,I_d
-        \Bigr).
-  \]
-  Relative to the linear case, the quadratic term $Q$ introduces two
+        \right). \label{eq:es-quad-cov}
+  \end{align}
+  Relative to the linear case (Proposition~\ref{prop:linear_landscape_step}), the quadratic term $Q$ introduces two
   additional contributions: (i) a curvature-dependent inflation of
   $\sigma_R^2$ through $\operatorname{Tr}[Q^2]$, which \emph{attenuates}
   the mean gradient step; and (ii) an anisotropic noise term
-  $2\sigma^4 Q^2/\sigma_R^2$ in the covariance, which directs
-  stochastic fluctuations along the principal curvature directions
+  $2\sigma^4 Q^2/\sigma_R^2$ in the covariance, which increases
+  update variance along the principal high curvature directions
   of $Q$.
   \end{proposition}
   
@@ -180,6 +217,7 @@
   
   
   \subsection{Z-score ES Update Setup}
+    
   We detail the ES update rule as implemented in LLM fine-tuning. The update at step $t$ is
   \begin{equation}
     \theta_{t+1} = \theta_{t} + \alpha \cdot \frac{1}{N} \sum_{i=1}^{N} Z_{i}\epsilon_{i}
@@ -194,6 +232,7 @@
   
   \subsection{Flat Landscape Analysis}\label{appsec:flat_RW_scaling}
   
+  \begin{proof}[Proof of Proposition \ref{prop:flat_landscape_scaling}]
   The key assumption is that $Z_{i}$ is independent of $\epsilon_{i}$,
   i.e., $Z_{i}\perp\epsilon_{i}$. Then we can write down the distribution
   of $\Delta\theta$ conditioned on a set of $Z_{i}$:
@@ -256,8 +295,9 @@
   \begin{equation}
   \mathbb{E}\|\bar{\Delta\theta_{T}}\|^{2} = \frac{\sigma^{2}Td}{4N}
   \end{equation}
-  
-  
+
+\end{proof}
+
   \subsection{Linear Landscape Analysis}\label{appsec:linear_landscape_step}
   
   Consider a linear landscape with i.i.d.~observational noise $\xi\sim\mathcal{N}(0,1)$,
@@ -423,7 +463,33 @@
   =&~\frac{ \alpha^{2} (2\sigma^{2}\|\mathbf{v}\|^{2} + \sigma_{\xi}^{2}) }{ N ( \sigma^{2}\|\mathbf{v}\|^{2} + \sigma_{\xi}^{2} ) } + \frac{ (\sigma\alpha)^{2} \|\mathbf{v}\|^{2} }{ \sigma^{2}\|\mathbf{v}\|^{2} + \sigma_{\xi}^{2} } \notag\\
   =&~\frac{\alpha^{2}}{N} + \left(1 + \frac{1}{N}\right) \frac{ \sigma^{2}\|\mathbf{v}\|^{2} \alpha^{2} }{ \sigma^{2}\|\mathbf{v}\|^{2} + \sigma_{\xi}^{2} }
   \end{align}
-  
+
+  \paragraph{Overall distribution of the update}
+Since the off-manifold component $P^{\perp}\Delta\theta$ is independent of the rewards
+and hence of $P^{\parallel}\Delta\theta$, we can combine the on- and off-manifold results
+to obtain the full single-step statistics. Writing $\sigma_{R}^{2} := \sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2}$,
+\begin{align}
+  \mathbb{E}[\Delta\theta] &= \frac{-\sigma\alpha\,\mathbf{v}}{\sigma_{R}}, \\
+  \mathrm{Cov}[\Delta\theta]
+  &= \frac{\alpha^{2}}{N}\,I_{d}
+     + \frac{\alpha^{2}\sigma^{2}}{N\sigma_{R}^{2}}\,\mathbf{v}\mathbf{v}^\top.
+\end{align}
+The covariance has the same isotropic baseline $\frac{\alpha^2}{N}I_d$ as the flat landscape,
+plus a rank-1 boost along the gradient direction. 
+% Equivalently, in the
+% $\{P^{\parallel}, P^{\perp}\}$ decomposition the on-manifold variance exceeds the
+% off-manifold variance by a factor
+% $(2\sigma^{2}\|\mathbf{v}\|^{2}+\sigma_{\xi}^{2})/\sigma_{R}^{2} \in [1,2]$,
+% an inflation due to the non-Gaussian ($\chi^{2}$) fluctuations of $n_i^2$
+% that persists even in the noise-free limit $\sigma_\xi \to 0$.
+The total expected squared norm is
+\begin{align}
+\mathbb{E}\|\Delta\theta\|^{2}
+&= \frac{\sigma^{2}\alpha^{2}\|\mathbf{v}\|^{2}}{\sigma_{R}^{2}}
+ + \frac{\alpha^{2}d}{N}
+ + \frac{\alpha^{2}\sigma^{2}\|\mathbf{v}\|^{2}}{N\,\sigma_{R}^{2}}.
+\end{align}
+
   \paragraph{Manifold Alignment of Update}
   
   Consider the ratio of the on- and off-manifold movement:
