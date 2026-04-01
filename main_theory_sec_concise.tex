@@ -1,0 +1,46 @@
+\section{Theoretical Interpretation}
+\label{sec:theory}
+ 
+The preceding experiments reveal a consistent pattern: ES and GRPO reach comparable task accuracy, yet ES accumulates weight changes two orders of magnitude larger, its update direction resembles a random direction on holdout tasks, and the two solutions are linearly connected with no loss barrier. We now develop a theoretical account that explains all of these phenomena within a unified framework.
+ 
+The core intuition is that in the high-dimensional parameter spaces of modern LLMs, the vast majority of directions carry negligible curvature with respect to the fine-tuning objective. On these \emph{weakly informative} directions, the ES update reduces to isotropic diffusion—a random walk whose squared displacement grows linearly with steps and dimensionality. Because the task-relevant subspace is low-dimensional relative to the full parameter space, this off-manifold drift dominates the total weight change even when the on-manifold component is sufficient for learning.
+ 
+\subsection{ES weight growth as a random walk}
+ 
+On a completely flat landscape, the ES update in Eq.~\eqref{eq:ES_equation} reduces to a sum of isotropic Gaussian vectors weighted by reward noise, and the cumulative weight change follows a high-dimensional random walk.
+ 
+\begin{proposition}[Scaling of ES on a flat landscape]
+\label{prop:flat}
+On a flat landscape where the observed reward is independent of the weight perturbation ($R_i \perp \epsilon_i$), after $T$ steps of ES with population size $N$, step size $\alpha$, and parameter dimension $d$, the expected squared deviation from initialization is
+$\mathbb{E}\bigl[\|\Delta W_T\|^{2}\bigr] = {\alpha^{2}\, T\, d}/{N}.$
+\end{proposition}
+ 
+\noindent The proof follows from the independence structure of the perturbations and the normalization of the z-scores (Appendix~\ref{app:theory-derivation}).
+ 
+This prediction matches our experiments with striking precision. For the overall model, $\|\Delta W\|^2$ grows linearly with step count ($r = 0.9999$; Figure~\ref{fig:weight_drift}), while GRPO exhibits no such scaling ($r = 0.875$). Inverting the observed slope to infer an effective random walk dimension gives $d_{\mathrm{eff}} / d_{\mathrm{total}} = 96.4\%$. Per-parameter analysis sharpens this picture: the 145 large weight matrices follow the prediction almost exactly ($d_{\mathrm{eff}}/d = 0.968 \pm 0.014$, $R^2 = 0.9999$), while normalization parameters deviate strongly ($d_{\mathrm{eff}}/d = 1.73 \pm 0.88$, $R^2 = 0.046 \pm 1.17$; Appendix~\ref{appsec:weight_drift_RW_stats}). Weight matrices contribute the overwhelming majority of parameters yet exhibit near-total degeneracy; normalization parameters, though far lower-dimensional, are more tightly constrained by the landscape.
+ 
+ 
+\subsection{Geometry of ES versus gradient descent solutions}
+ 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Theory_Schematics/Schematics_Landscape.png}
+    \caption{Schematic of the fine-tuning loss landscape. GRPO moves along the low-dimensional task-relevant subspace (red arrow). ES accumulates both a task-relevant component and a large off-manifold random walk (blue arrow), yielding a much larger total displacement that is nearly orthogonal to GRPO. The two solutions are linearly connected because the off-manifold component is loss-invariant.}
+    \label{fig:landscape_schematics}
+\end{figure}
+ 
+For linear and quadratic landscapes, we derive the mean and covariance of the single-step ES update analytically (Appendix~\ref{app:theory-derivation}). In both cases, the update decomposes into an \textbf{on-manifold} gradient-like term that drives task learning, and an \textbf{off-manifold} isotropic Gaussian term identical to the random walk of Proposition~\ref{prop:flat}. To characterize multi-step behavior on quadratic landscapes, we approximate ES by an Ornstein--Uhlenbeck process and GRPO by gradient descent, yielding closed-form parameter distributions after $T$ steps (Appendix~\ref{app:theory-derivation}).
+ 
+Let $\theta_0$, $\theta_{\mathrm{GD}}$, and $\theta_{\mathrm{ES}}$ denote the initialization, GRPO solution, and ES solution respectively. The direction $\theta_{\mathrm{GD}} - \theta_0$ lies entirely within the task-relevant subspace; $\theta_{\mathrm{ES}} - \theta_0$ superimposes a comparable task-relevant component with a much larger off-manifold random walk; and $\theta_{\mathrm{ES}} - \theta_{\mathrm{GD}}$ is dominated by the off-manifold term alone. This decomposition accounts for each empirical observation:
+ 
+\textbf{Large update norms} (Table~\ref{tab:norms}): the ES norm is dominated by the off-manifold term scaling as $\alpha^2 dT/N$, which dwarfs the task-relevant component when $d$ is large.
+%
+\textbf{Flat mode connectivity} (Figure~\ref{fig:connectivity}): the line connecting $\theta_{\mathrm{ES}}$ and $\theta_{\mathrm{GD}}$ lies predominantly in the off-manifold subspace where the loss is flat, so no barrier appears despite large Euclidean separation.
+%
+\textbf{ES direction resembles a random direction} (Figure~\ref{fig:directional-perturbation}): because the off-manifold component dominates the normalized ES direction, its curvature is diluted by the many flat dimensions: $\Delta_{\mathrm{ES}}^\top H \Delta_{\mathrm{ES}} \ll \Delta_{\mathrm{GD}}^\top H \Delta_{\mathrm{GD}}$.
+%
+\textbf{Holdout degradation} (Figure~\ref{fig:holdout-perturbation}): the off-manifold directions are flat for the fine-tuning objective but not necessarily for general capabilities. The fine-tuning landscape sits atop a broad plateau of base-task performance, so perturbations beyond a certain radius in any direction—including off-manifold—degrade general capabilities, explaining why ES and random directions produce similar holdout degradation profiles.
+ 
+\begin{remark}
+This random-walk-like behavior connects to a broader phenomenon in high-dimensional optimization. \citet{antognini2018pca_highdim_random_walk} showed that Ornstein--Uhlenbeck processes in high dimensions are dominated by their flattest dimensions, making trajectories appear diffusive. Analogous observations have been made for SGD-trained neural network weights and for images optimized via ES to drive visual neurons, suggesting that high degeneracy and random-walk-like drift on flat subspaces may be a generic feature of high-dimensional landscapes.
+\end{remark}

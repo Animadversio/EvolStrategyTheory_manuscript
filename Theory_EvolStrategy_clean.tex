@@ -194,6 +194,39 @@ This behavior connects to a broader phenomenon: \citet{antognini2018pca_highdim_
 
 
 
+% \begin{proposition}[ES as Isotropic Random Walk on Flat Landscapes]
+% On a flat reward landscape, the ES weight update $\Delta\theta$ follows an isotropic Gaussian distribution:
+% \begin{equation}
+% \Delta\theta \sim \mathcal{N}\!\left(0,\; \frac{\sigma^2}{4N}I_d\right)
+% \end{equation}
+% independent of the realized rewards $\{R_i\}$. Consequently, after $T$ steps the cumulative deviation satisfies:
+% \begin{equation}
+% \mathbb{E}\|\theta_T - \theta_0\|^2 = \frac{\sigma^2 T d}{4N}
+% \end{equation}
+% This exhibits diffusive scaling in both time $T$ and the parameter dimension $d$.
+% \end{proposition}
+
+% \begin{proposition}[Signal--Noise Decomposition on Linear Landscapes]
+% On a linear reward landscape $R(\theta) = -\mathbf{v}^\top\theta$ with observation noise $\sigma_\xi$,
+% the ES update decomposes into orthogonal signal and noise components:
+% \begin{align}
+% \mathbb{E}[P^{\parallel}\Delta\theta] &= -\frac{\sigma\alpha}{\sqrt{\sigma^2\|\mathbf{v}\|^2 + \sigma_\xi^2}}\,\mathbf{v}, 
+% &\mathrm{Var}[P^{\parallel}\Delta\theta] &= \frac{\alpha^2(2\sigma^2\|\mathbf{v}\|^2+\sigma_\xi^2)}{N(\sigma^2\|\mathbf{v}\|^2+\sigma_\xi^2)}P^{\parallel}\nonumber \\
+% \mathbb{E}[P^{\perp}\Delta\theta] &= 0, 
+% &\mathrm{Var}[P^{\perp}\Delta\theta] &= \frac{\alpha^2}{N}P^{\perp}
+% \end{align}
+% The signal-to-noise ratio of the on-manifold update scales as:
+% \begin{equation}
+% \mathrm{SNR} = \sqrt{N}\cdot\frac{\sigma\|\mathbf{v}\|}{\sqrt{2\sigma^2\|\mathbf{v}\|^2 + \sigma_\xi^2}}
+% \end{equation}
+% In the noise-free limit $\sigma_\xi\to 0$, $\mathrm{SNR}\to\sqrt{N/2}$, revealing an irreducible floor
+% set by the non-Gaussian ($\chi^2$) fluctuations of the on-manifold exploration. In the high-noise
+% limit $\sigma_\xi \gg \sigma\|\mathbf{v}\|$, the SNR degrades as $\sqrt{N}\,\sigma\|\mathbf{v}\|/\sigma_\xi$,
+% recovering the classical ES sample-complexity bound.
+% \end{proposition}
+
+
+
 % \subsection{Theoretical results}
 \subsection{Evolution Strategy on a Flat Landscape}
 \label{prop:flat}
@@ -1947,6 +1980,7 @@ with $s = \sigma^{2}\|\mathbf{v}\|^{2}/\sigma_{R}^{2}$.
   which is small for $r \ll d$: the two displacement vectors are nearly orthogonal
   despite leading to similar task performance.
   \end{remark}
+
 
 
 

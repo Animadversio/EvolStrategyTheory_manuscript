@@ -1,0 +1,138 @@
+
+\section{Theoretical Interpretation}
+\label{sec:theory}
+The preceding experiments reveal a consistent pattern: ES and GRPO reach comparable task accuracy, yet ES accumulates weight changes two orders of magnitude larger, its update direction resembles a random direction on holdout tasks, and the two solutions are linearly connected with no loss barrier. We now develop a theoretical account that explains all of these phenomena within a unified framework.
+
+\subsection{Central claim: signal--diffusion decomposition}
+
+The core result is that, on a landscape with a low-rank task-relevant structure, the ES displacement from initialization decomposes into two components. Let $Q = \sum_k \lambda_k \mathbf{u}_k\mathbf{u}_k^\top$ be the eigendecomposition of the landscape curvature, and define $\gamma_k := 1 - \frac{\alpha\sigma}{\sigma_R}\lambda_k$. Then (derived in Appendix~\ref{appsec:solution_geometry}):
+\begin{equation}\label{eq:es_decomposition}
+    \theta_{\mathrm{ES}} - \theta_0
+    = \sum_{k=1}^{d}\Big[
+    \underbrace{(\gamma_k^T - 1)(\mathbf{u}_k^\top\theta_0)}_{\text{signal: } = 0 \text{ when } \lambda_k = 0}
+    \;+\; \underbrace{\textstyle\sum_{t=1}^{T}\gamma_k^{t-1}\,(\mathbf{u}_k^\top\eta_{T-t})}_{\text{noise: present for all } k}
+    \Big]\,\mathbf{u}_k,
+\end{equation}
+where $\eta_t \sim \mathcal{N}(0, \frac{\alpha^2}{N}I_d)$ is per-step isotropic noise. The structure is now transparent: on task-relevant directions ($\lambda_k > 0$), $\gamma_k < 1$ and the signal term drives the iterate toward the optimum, just as gradient descent would (Proposition~\ref{prop:gd_displacement}). On flat directions ($\lambda_k = 0$), $\gamma_k = 1$, the signal term vanishes, and the noise terms sum to a pure random walk. Since flat directions account for $d - r$ of the $d$ dimensions with $r \ll d$, this off-manifold diffusion dominates the total displacement.
+
+The core result is that, on a landscape with a low-rank task-relevant structure, the ES displacement from initialization decomposes into two components (derived in Appendix~\ref{appsec:solution_geometry}):
+\begin{equation}\label{eq:es_decomposition}
+    \theta_{\mathrm{ES}} - \theta_0
+    = \underbrace{(H^T - I)\,\theta_0}_{\text{on-manifold signal}}
+    \;+\; \underbrace{\sum_{t=1}^{T}H^{t-1}\,\eta_{T-t}}_{\text{isotropic diffusion}},
+\end{equation}
+where $H = I - \frac{\alpha\sigma}{\sigma_R}Q$ is the contraction operator of ES update on a quadratic landscape $R(\theta) = -\frac{1}{2}\theta^\top Q\theta$, and $\eta_t \sim \mathcal{N}(0, \frac{\alpha^2}{N}I_d)$ is per-step isotropic noise.
+
+The signal term lies entirely within the column space of $Q$---the task-relevant subspace---and is structurally identical to a gradient descent displacement (Proposition~\ref{prop:gd_displacement}). The diffusion term has support in all $d$ dimensions. 
+By contrast, the gradient descent displacement $\theta_{\mathrm{GD}} - \theta_0$ lies entirely within the column space of $Q$ and has no off-manifold component (Proposition~\ref{prop:gd_displacement}).
+
+When the task-relevant subspace has rank $r \ll d$, the off-manifold diffusion dominates the total ES displacement. This single fact accounts for every geometric observation in Section~\ref{sec:weight-space}.
+
+
+\subsection{Why diffusion dominates: the random walk scaling}
+
+On a completely flat landscape, where rewards are independent of perturbations, the ES update reduces to a pure isotropic random walk:
+\begin{proposition}[ES on a flat landscape; proof in Appendix~\ref{appsec:flat_RW_scaling}]
+\label{prop:flat_main}
+After $T$ steps of ES with population size $N$, step size $\alpha$, and parameter dimension $d$,
+\begin{equation}\label{eq:flat_RW}
+    \Delta\theta_t \sim \mathcal{N}\!\left(0,\, \frac{\alpha^2}{N} I_d\right), 
+    \qquad
+    \mathbb{E}\bigl[\|\theta_T - \theta_0\|^{2}\bigr] = \frac{\alpha^2\, T\, d}{N}.
+\end{equation}
+\end{proposition}
+
+\noindent This scaling---linear in $T$ and $d$, inverse in $N$---is the signature of the off-manifold component. 
+Crucially, the off-manifold term retains this exact scaling even when the landscape has curvature: on linear and quadratic landscapes, we derive the full single-step mean and covariance analytically (Propositions~\ref{prop:linear_landscape_step},~\ref{prop:quad_landscape_step} in Appendix~\ref{app:theory-derivation}). In both cases, the covariance decomposes as
+\begin{equation}\label{eq:cov_structure}
+    \mathrm{Cov}[\Delta\theta]
+    = \underbrace{\frac{\alpha^2}{N}\,I_d}_{\text{isotropic baseline (same as flat)}}
+    \;+\; \underbrace{\text{rank-}r\text{ task-dependent terms}}_{\text{on-manifold boost}},
+\end{equation}
+so the isotropic random walk persists as a baseline regardless of landscape shape.
+
+The on-manifold fraction of total squared displacement per step is (Appendix~\ref{appsec:linear_landscape_step}):
+\begin{equation}\label{eq:rho}
+    \rho :=
+    \frac{\mathbb{E}\|P^{\parallel}\Delta\theta\|^2}
+         {\mathbb{E}\|\Delta\theta\|^2}
+    =
+    \frac{1 + (N{+}1)\,s}
+         {d + (N{+}1)\,s},
+\end{equation}
+where $s := \sigma^{2}\|\mathbf{v}\|^{2}/\sigma_{R}^{2} \in [0,1]$ is the signal fraction. Since $N \ll d$ in practice (e.g., $N = 30$, $d \approx 4 \times 10^9$), $\rho$ is negligible: the per-step displacement is overwhelmingly off-manifold.
+
+Over $T$ steps, these per-step contributions compound (Proposition~\ref{prop:es_displacement}):
+\begin{equation}\label{eq:norm_hierarchy}
+    \mathbb{E}\|\theta_{\mathrm{ES}} - \theta_0\|^2
+    = \underbrace{\mathcal{O}(r)}_{\text{on-manifold}}
+    + \underbrace{\frac{\alpha^2 T(d{-}r)}{N}}_{\text{off-manifold diffusion}}
+    \;\approx\; \frac{\alpha^2 T d}{N}.
+\end{equation}
+
+
+\subsection{Geometric consequences}
+
+The decomposition yields a sharp geometric hierarchy (Propositions~\ref{prop:gd_displacement}--\ref{prop:es_gd_difference}):
+\begin{align}
+    \|\theta_{\mathrm{GD}} - \theta_0\|^2 &= \mathcal{O}(r), \label{eq:gd_norm}\\
+    \mathbb{E}\|\theta_{\mathrm{ES}} - \theta_0\|^2 &= \mathcal{O}(r) + \mathcal{O}(d), \label{eq:es_norm}\\
+    \mathbb{E}\|\theta_{\mathrm{ES}} - \theta_{\mathrm{GD}}\|^2 &= \mathcal{O}(d), \label{eq:es_gd_norm}
+\end{align}
+and the expected cosine similarity between displacements scales as (Remark~\ref{rmk:cosine_similarity}):
+\begin{equation}\label{eq:cosine}
+    \mathbb{E}\!\left[\cos\angle(\theta_{\mathrm{ES}} - \theta_0,\;
+    \theta_{\mathrm{GD}} - \theta_0)\right]
+    \sim \mathcal{O}\!\left(\sqrt{r/d}\right),
+\end{equation}
+which is negligible for $r \ll d$: the two displacements are nearly orthogonal despite leading to similar task performance.
+
+Table~\ref{tab:es_vs_gd} summarizes the key behavioral differences between ES and gradient descent on the same landscape. The critical distinction is on flat directions ($\lambda_k = 0$): GD freezes at initialization, while ES diffuses with variance growing as $\alpha^2 t / N$.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{ES vs.\ gradient descent dynamics on a quadratic landscape (Propositions~\ref{prop:quad_landscape_dynamics},~\ref{prop:gd_quad_dynamics}).}
+\label{tab:es_vs_gd}
+\begin{tabular}{lcc}
+\toprule
+ & \textbf{Gradient Descent} & \textbf{Evolution Strategy} \\
+\midrule
+Eff.\ learning rate & $\beta$ & $\alpha\sigma/\sigma_R$ \\
+Residual error (stable dir.) & $0$ & $\alpha^2/[N(1-\gamma_k^2)]$ \\
+Flat direction ($\lambda_k{=}0$) & frozen & diffusion $\sim \alpha^2 t/N$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\subsection{Empirical validation and explanatory power}
+
+\textbf{Random walk scaling matches LLM experiments.}
+Proposition~\ref{prop:flat_main} predicts $\|\Delta\theta\|^2 \propto T$. For the full parameter vector, we observe a linear correlation of $r = 0.9999$ for ES (vs.\ $r = 0.875$ for GRPO; Figure~\ref{fig:weight_drift}). Inverting the observed slope to infer an effective random walk dimension yields $d_{\mathrm{eff}} / d_{\mathrm{total}} = 96.4\%$: nearly all parameter dimensions behave as flat directions.
+Per-parameter analysis sharpens this: the 145 large weight matrices follow the random walk scaling almost exactly ($d_{\mathrm{eff}}/d = 0.968 \pm 0.014$, $R^2 = 0.9999$), while normalization parameters deviate strongly ($d_{\mathrm{eff}}/d = 1.73 \pm 0.88$, $R^2 = 0.046 \pm 1.17$), indicating that the landscape constrains them more tightly (Appendix~\ref{appsec:weight_drift_RW_stats}, Figure~\ref{fig:d_ratio}).
+The $3.6\%$ deficit from the pure random walk prediction is interpretable as the task-relevant fraction---directions where landscape curvature constrains the random walk (Proposition~\ref{prop:quad_landscape_dynamics}).
+
+\textbf{Explaining each observation.}
+The decomposition in Eq.~\eqref{eq:es_decomposition} simultaneously accounts for every geometric finding in Section~\ref{sec:weight-space}:
+
+\begin{itemize}[leftmargin=1.5em]
+\item \textbf{Large update norms} (Table~\ref{tab:norms}): the ES norm is dominated by the $\mathcal{O}(d)$ off-manifold term~\eqref{eq:es_norm}, while GRPO stays at $\mathcal{O}(r)$~\eqref{eq:gd_norm}, producing the observed ${\sim}100\times$ ratio.
+
+\item \textbf{Flat mode connectivity} (Figure~\ref{fig:connectivity}): the line connecting $\theta_{\mathrm{ES}}$ and $\theta_{\mathrm{GD}}$ lies predominantly in the off-manifold subspace~\eqref{eq:es_gd_norm}, where the loss is flat by definition, so no barrier appears despite large Euclidean separation.
+
+\item \textbf{ES direction resembles a random direction} (Figure~\ref{fig:directional-perturbation}): because the off-manifold component dominates the normalized ES direction, its curvature is diluted by the many flat dimensions, making it behaviorally similar to a random perturbation.
+
+\item \textbf{Holdout degradation} (Figure~\ref{fig:holdout-perturbation}): the off-manifold directions are flat for the fine-tuning objective but not necessarily for general capabilities. The fine-tuning landscape sits atop a broad plateau of base-task performance, so perturbations beyond a certain radius in any direction---including off-manifold---degrade general capabilities, explaining why ES and random directions produce similar holdout degradation profiles.
+\end{itemize}
+
+ \begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Theory_Schematics/Schematics_Landscape.png}
+    \caption{Schematic of the fine-tuning loss landscape. GRPO moves along the low-dimensional task-relevant subspace (red arrow). ES accumulates both a task-relevant component and a large off-manifold random walk (blue arrow), yielding a much larger total displacement that is nearly orthogonal to GRPO. The two solutions are linearly connected because the off-manifold component is loss-invariant.}
+    \label{fig:landscape_schematics}
+\end{figure}
+
+\begin{remark}
+This random-walk-like behavior connects to a broader phenomenon in high-dimensional optimization. \citet{antognini2018pca_highdim_random_walk} showed that Ornstein--Uhlenbeck processes in high dimensions are dominated by their flattest dimensions, making trajectories appear diffusive. Analogous observations have been made for SGD-trained neural network weights and for images optimized via ES to drive visual neurons \citep{wang2022highperf_ES,wang2022tuninglandscape}, suggesting that high degeneracy and random-walk-like drift on flat subspaces may be a generic feature of high-dimensional landscapes.
+\end{remark}
